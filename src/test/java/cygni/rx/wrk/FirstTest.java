@@ -2,6 +2,8 @@ package cygni.rx.wrk;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.reactivex.netty.protocol.http.client.HttpClient;
+import io.reactivex.netty.protocol.http.client.HttpClientImpl;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -45,7 +47,7 @@ public class FirstTest extends javafx.application.Application {
         gp.setPadding(new Insets(25));
         final Scene scene = new Scene(gp, 800, 600);
         primaryStage.setScene(scene);
-        gp.add(new Label("Query"), 0,0);
+        gp.add(new Label("Query"), 0, 0);
         final TextField searchField = new TextField();
         gp.add(searchField, 1, 0);
         final Button searchButton = new Button("Search");
@@ -56,17 +58,17 @@ public class FirstTest extends javafx.application.Application {
         primaryStage.show();
 
 
-
         final ConnectableObservable<ActionEvent> searchButtonClicks = JavaFxObservable.fromNodeEvents(searchButton, ActionEvent.ACTION).publish();
         searchButtonClicks.connect();
         final Observable<KeyEvent> searchKeyPresses = JavaFxObservable.fromNodeEvents(searchField, KeyEvent.KEY_TYPED);
 
 
+        HttpClient.
         final CloseableHttpAsyncClient httpClient = HttpAsyncClients.createDefault();
         httpClient.start();
         searchButtonClicks.subscribe(e -> {
-                    System.out.println("search click: " + e);
-                });
+            System.out.println("search click: " + e);
+        });
         searchKeyPresses.subscribe(e -> {
             System.out.println("search key press: " + e);
         });
@@ -78,7 +80,8 @@ public class FirstTest extends javafx.application.Application {
             System.out.println("Search text changed:" + e);
         });
 
-        final Observable<ObservableHttpResponse> requests = searchButtonClicks.flatMap(c -> {
+        final ConnectableObservable<ActionEvent> triggerRequest = searchButtonClicks;
+        final Observable<ObservableHttpResponse> requests = triggerRequest.flatMap(c -> {
             final String text = searchField.getText();
             final String url = String.format(
                     "http://api.duckduckgo.com/?q=%s&format=json&pretty=1", urlEncode(text)
@@ -89,27 +92,39 @@ public class FirstTest extends javafx.application.Application {
             return o;
         });
 
+        //final Observable<ObservableHttpResponse> timeout = triggerRequest.flatMap(r -> Observable.<ObservableHttpResponse>error(new RuntimeException("timeout")).delay(2, TimeUnit.SECONDS));
+        //Observable.amb(timeout, requests)
         /*
         requests.subscribe(r -> {
             System.out.println("got it");
+        }, e -> e.printStackTrace(System.err));
+          */
+
+
+        requests.flatMap(ObservableHttpResponse::getContent)
+
+                .map(String::new)
+                .reduce((a, b) -> {
+                    System.out.println(a + b);
+                    return a + b;
+                }).subscribe(body -> {
+            System.out.println(body);
         });
-        */
 
-
-        requests.flatMap(r -> {
-            System.out.println("Got answer on " + Thread.currentThread().getName());
-            final HttpEntity e = r.getContent().m
-            final JsonNode root = toJson(e);
+                /*
+                .map(body -> {
+                    System.out.println(body);
+                    return body;
+                })
+                .subscribe( root -> {
             Platform.runLater(() -> lw.getItems().add("Blehbleh"));
-            //lw.refresh();
         }, e -> {
             System.out.println("error");
             e.printStackTrace(System.err);
         }, () -> {
             System.out.println("complete");
         });
-
-
+        */
 
 
         //1. Make button trigger load. Transform from click to text from field
@@ -117,10 +132,9 @@ public class FirstTest extends javafx.application.Application {
         //2. Merge with keypresses
     }
 
-    private JsonNode toJson(HttpEntity e)  {
+    private JsonNode toJson(String s) {
         try {
-            final InputStream is = e.getContent();
-            return new ObjectMapper().readTree(is);
+            return new ObjectMapper().readTree(s);
         } catch (IOException e1) {
             throw new RuntimeException(e1);
         }
