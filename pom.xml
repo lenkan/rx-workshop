@@ -16,9 +16,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.netflix.rxjava</groupId>
-            <artifactId>rxjava-core</artifactId>
-            <version>0.20.7</version>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -38,17 +38,10 @@
             <version>0.20.7</version>
         </dependency>
         -->
-        <!--
         <dependency>
             <groupId>io.reactivex</groupId>
             <artifactId>rxnetty</artifactId>
             <version>0.4.4</version>
-        </dependency>
-        -->
-        <dependency>
-            <groupId>io.reactivex</groupId>
-            <artifactId>rxnetty-http</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -73,12 +66,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>oss-jfrog-artifactory</id>
-            <name>oss-jfrog-artifactory-snapshots</name>
-            <url>https://oss.jfrog.org/libs-snapshot</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>

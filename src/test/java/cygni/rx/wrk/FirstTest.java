@@ -2,11 +2,17 @@ package cygni.rx.wrk;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.reactivex.netty.protocol.http.client.HttpClient;
-import io.reactivex.netty.protocol.http.client.HttpClientImpl;
+import com.google.common.base.Charsets;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import io.netty.buffer.ByteBuf;
+import io.reactivex.netty.RxNetty;
+import io.reactivex.netty.protocol.http.AbstractHttpContentHolder;
+import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,20 +24,19 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import org.apache.http.HttpEntity;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.impl.nio.client.HttpAsyncClients;
 import rx.Observable;
-import rx.apache.http.ObservableHttp;
-import rx.apache.http.ObservableHttpResponse;
 import rx.observables.ConnectableObservable;
 import rx.observables.JavaFxObservable;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FirstTest extends javafx.application.Application {
 
@@ -58,14 +63,11 @@ public class FirstTest extends javafx.application.Application {
         primaryStage.show();
 
 
-        final ConnectableObservable<ActionEvent> searchButtonClicks = JavaFxObservable.fromNodeEvents(searchButton, ActionEvent.ACTION).publish();
-        searchButtonClicks.connect();
+        final Observable<ActionEvent> searchButtonClicks = JavaFxObservable.fromNodeEvents(searchButton, ActionEvent.ACTION);
+        //searchButtonClicks.connect();
         final Observable<KeyEvent> searchKeyPresses = JavaFxObservable.fromNodeEvents(searchField, KeyEvent.KEY_TYPED);
 
 
-        HttpClient.
-        final CloseableHttpAsyncClient httpClient = HttpAsyncClients.createDefault();
-        httpClient.start();
         searchButtonClicks.subscribe(e -> {
             System.out.println("search click: " + e);
         });
@@ -80,14 +82,15 @@ public class FirstTest extends javafx.application.Application {
             System.out.println("Search text changed:" + e);
         });
 
-        final ConnectableObservable<ActionEvent> triggerRequest = searchButtonClicks;
-        final Observable<ObservableHttpResponse> requests = triggerRequest.flatMap(c -> {
+        final Observable<ActionEvent> triggerRequest = searchButtonClicks;
+        final Observable<HttpClientResponse<ByteBuf>> requests = triggerRequest.flatMap(c -> {
             final String text = searchField.getText();
             final String url = String.format(
                     "http://api.duckduckgo.com/?q=%s&format=json&pretty=1", urlEncode(text)
             );
+            //final String url = "http://durat.io";
             System.out.println("Running request:" + url + " on " + Thread.currentThread().getName());
-            final Observable<ObservableHttpResponse> o = ObservableHttp.createGet(url, httpClient).toObservable();
+            final Observable<HttpClientResponse<ByteBuf>> o = RxNetty.createHttpGet(url);
             System.out.println("Created request");
             return o;
         });
@@ -99,8 +102,31 @@ public class FirstTest extends javafx.application.Application {
             System.out.println("got it");
         }, e -> e.printStackTrace(System.err));
           */
+        //Bad idea: Think that the stream of click events is done just because one request is done.
+        requests.subscribe(response -> {
+            response.getContent().subscribe(bb -> {
+                        final String s = bb.toString(Charsets.UTF_8);
+                        final JsonNode j = toJson(s);
+                        final JsonNode relatedTopics = j.get("RelatedTopics");
+
+                        final ArrayList<JsonNode> relatedTopicsList = Lists.newArrayList(relatedTopics);
+                        final List<String> links = relatedTopicsList.stream().filter(r -> r.has("FirstURL")).map(r -> r.get("FirstURL").textValue()).collect(Collectors.toList());
+                        Platform.runLater(() -> {
+                            //final ObservableList<Object> newItems = FXCollections.observableArrayList(links);
+                            lw.getItems().clear();
+                            lw.getItems().addAll(links);
+                        });
+                        System.out.println(links);
+                    }, (e) -> {
+                        e.printStackTrace(System.err);
+                    }, () -> {
+                        System.out.println("complete");
+                    }
+            );
+        });
 
 
+        /*
         requests.flatMap(ObservableHttpResponse::getContent)
 
                 .map(String::new)
@@ -110,7 +136,7 @@ public class FirstTest extends javafx.application.Application {
                 }).subscribe(body -> {
             System.out.println(body);
         });
-
+          */
                 /*
                 .map(body -> {
                     System.out.println(body);
