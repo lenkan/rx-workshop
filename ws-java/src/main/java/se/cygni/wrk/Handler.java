@@ -37,39 +37,6 @@ public class Handler {
         queryInputs = PublishSubject.create();
         instantSearchChanges = PublishSubject.create();
         enterPresses = PublishSubject.create();
-        messages.onNext(createLinksMessage(Collections.singletonList("http://java.sun.com")));
-        Observable<String> textOnGoClick = queryInputs.sample(goClicks);
-        Observable<String> textOnTypeWhenInstantEnabled = Observable.combineLatest(queryInputs, 
-                instantSearchChanges, InstantType::new).filter(ie -> ie.instantEnabled)
-                .map(ie -> ie.text);
-        Observable<String> shouldRunRequest = textOnGoClick.mergeWith(textOnTypeWhenInstantEnabled);
-        final Observable<HttpClientResponse<ByteBuf>> requests = shouldRunRequest.flatMap(text -> {
-            final String url = String.format(
-                    "http://api.duckduckgo.com/?q=%s&format=json&pretty=1", Util.urlEncode(text)
-            );
-            System.out.println("Running request:" + url + " on " + Thread.currentThread().getName());
-            final Observable<HttpClientResponse<ByteBuf>> o = RxNetty.createHttpGet(url);
-            System.out.println("Created request");
-            return o;
-        });
-        requests.subscribe(response -> {
-            response.getContent().subscribe(bb -> {
-                        final String s = bb.toString(Charsets.UTF_8);
-                        final JsonNode j = Util.toJson(s);
-                        final JsonNode relatedTopics = j.get("RelatedTopics");
-
-                        final ArrayList<JsonNode> relatedTopicsList = Lists.newArrayList(relatedTopics);
-                        final List<String> links = relatedTopicsList.stream().filter(r -> r.has("FirstURL")).map(r -> r.get("FirstURL").textValue()).collect(Collectors.toList());
-                        System.out.println(links);
-                ObjectNode msg = createLinksMessage(links);
-                        this.messages.onNext(msg);
-                    }, (e) -> {
-                        e.printStackTrace(System.err);
-                    }, () -> {
-                        System.out.println("complete");
-                    }
-            );
-        });
     }
     
     private ObjectNode createLinksMessage(List<String> links) {
@@ -95,15 +62,5 @@ public class Handler {
 
     public Observer<String> getEnterPresses() {
         return enterPresses;
-    }
-
-    private class InstantType {
-        private final String text;
-        private final boolean instantEnabled;
-
-        public InstantType(String text, boolean instantEnabled) {
-            this.text = text;
-            this.instantEnabled = instantEnabled;
-        }
     }
 }
