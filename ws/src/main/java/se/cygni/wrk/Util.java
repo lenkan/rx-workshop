@@ -1,5 +1,6 @@
 package se.cygni.wrk;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,6 +24,14 @@ public class Util {
         try {
             return URLEncoder.encode(text, "UTF-8");
         } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String toString(JsonNode json) {
+        try {
+            return new ObjectMapper().writeValueAsString(json);
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }

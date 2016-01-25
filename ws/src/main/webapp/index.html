@@ -3,15 +3,16 @@
 <head>
     <style>
         .res {
-            list-style-type: none
+            list-style-type: none;
+            padding: 5px;
         }
 
         .res, li {
-            background: green;
+            background: rgba(202, 237, 242, 0.62);
         }
 
         .res, li:nth-child(odd) {
-            background: red;
+            background: #d6e1ff;
         }
     </style>
     <script>
@@ -23,6 +24,12 @@
                 function send(json) {
                     ws.send(JSON.stringify(json));
                 }
+                ws.onmessage = function(msgEvent) {
+                    console.log("received: " + msgEvent);
+                    var msg = JSON.parse(msgEvent.data);  
+                    console.log("received: " + msgEvent.data);
+                    console.log("received: " + msg);
+                };
                 document.getElementById("go").onclick = function () {
                     send({
                         "type": "go.click",
