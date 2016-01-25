@@ -3,11 +3,16 @@ package se.cygni.wrk;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.java_websocket.WebSocket;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by alext on 1/25/16.
@@ -39,5 +44,14 @@ public class Util {
 
     static String getAddress(WebSocket webSocket) {
         return webSocket.getRemoteSocketAddress().toString();
+    }
+
+    private static ObjectNode createLinksMessage(JsonNodeFactory nf, List<String> links) {
+        ObjectNode msg = JsonNodeFactory.instance.objectNode();
+        msg.put("type", "new.links");
+        ArrayNode jsonLinks = nf.arrayNode();
+        jsonLinks.addAll(links.stream().map(nf::textNode).collect(Collectors.toList()));
+        msg.set("links", jsonLinks);
+        return msg;
     }
 }
