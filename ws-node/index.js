@@ -8,6 +8,8 @@ function Handler(messages) {
   this.messages = messages;
   this.goClicks = new rx.Subject();
   this.queryInputs = new rx.Subject();
+  this.instantSearchChanges = new rx.Subject();
+  this.enterPresses = new rx.Subject();
   this.messages.onNext({
     type: "new.links",
     links: ["http://node.js"]
@@ -63,6 +65,12 @@ wsServer.on('request', function(request) {
     else if (message.type === "query.input") {
       handler.queryInputs.onNext(message.text);
     } 
+    else if (message.type == "instant.enable") {
+      handler.instantSearchChanges.onNext(message.value);
+    }
+    else if (message.type == "enter.press") {
+      handler.enterPresses.onNext("");
+    }
   });
 
   connection.on('close', function(connection) {
