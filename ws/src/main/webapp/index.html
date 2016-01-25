@@ -2,44 +2,62 @@
 <html>
 <head>
     <style>
-        .res { list-style-type: none }
-        .res, li { background: green; }
-        .res, li:nth-child(odd) { background: red; }
+        .res {
+            list-style-type: none
+        }
+
+        .res, li {
+            background: green;
+        }
+
+        .res, li:nth-child(odd) {
+            background: red;
+        }
     </style>
     <script>
         function loaded() {
             console.log("page loaded");
-            var s = new WebSocket("ws://localhost:4739");
-            function send(json) {
-                s.send(JSON.stringify(json));
-            }
-            document.getElementById("go").onclick = function() {
-                send({
-                    "type": "go.click",
-                    "data": {}
-                });
-            }
+            var ws = new WebSocket("ws://localhost:4739");
+            ws.onopen = function(event) {
+                console.log("connection open: " + JSON.stringify(event));
+                function send(json) {
+                    ws.send(JSON.stringify(json));
+                }
+                document.getElementById("go").onclick = function () {
+                    send({
+                        "type": "go.click",
+                        "data": {}
+                    });
+                };
+                var queryInput = document.getElementById("query");
+                queryInput.oninput = function () {
+                    send({
+                        "type": "query.input",
+                        "text": queryInput.value
+                    })
+                }
+            };
         }
 
     </script>
 </head>
 <body onload="loaded()">
-    <form>
-        <div>
-        <label for="searchInput">Query</label>
-            <input type="search"/>
-            <button id="go" type="button">Go</button>
-        </div>
-        <div>
-            <input type="checkbox">Instant search</input>
-        </div>
-        <div id="results">
-            <ul class="res">
-                <li>a</li>
-                <li>b</li>
-                <li>c</li>
-            </ul>
-        </div>
-    </form>
+<form>
+    <div>
+        <label for="query">Query</label>
+        <input id="query" type="search"/>
+        <button id="go" type="button">Go</button>
+    </div>
+    <div>
+        <input type="checkbox">Instant search</input>
+    </div>
+    <div id="results">
+        <ul class="res">
+            <li>a</li>
+            <li>b</li>
+            <li>c</li>
+        </ul>
+    </div>
+</form>
 </body>
 </html>
