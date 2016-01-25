@@ -33,7 +33,7 @@ public class Handler {
         this.messages = messages;
         goClicks = PublishSubject.create();
         queryInputs = PublishSubject.create();
-        messages.onNext(createLinksMessage(Collections.singletonList("http://connected-to-server.com")));
+        messages.onNext(createLinksMessage(Collections.singletonList("http://java.sun.com")));
         Observable<String> delayedTexts = queryInputs.sample(goClicks);
         final Observable<HttpClientResponse<ByteBuf>> requests = delayedTexts.flatMap(text -> {
             final String url = String.format(
