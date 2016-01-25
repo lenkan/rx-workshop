@@ -3,6 +3,7 @@ package se.cygni.wrk;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.java_websocket.WebSocket;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -34,5 +35,9 @@ public class Util {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    static String getAddress(WebSocket webSocket) {
+        return webSocket.getRemoteSocketAddress().toString();
     }
 }

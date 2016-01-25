@@ -23,7 +23,7 @@ public class Server extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
-        String address = getAddress(webSocket);
+        String address = Util.getAddress(webSocket);
         System.out.println("connect from " + address);
         PublishSubject<JsonNode> messages = PublishSubject.<JsonNode>create();
         messages.subscribe(json -> {
@@ -35,22 +35,15 @@ public class Server extends WebSocketServer {
         modelsBySocket.put(webSocket, handler);
     }
 
-    private String getAddress(WebSocket webSocket) {
-        InetSocketAddress remoteSocketAddress = webSocket.getRemoteSocketAddress();
-        return remoteSocketAddress.toString();
-    }
-
     @Override
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-        System.out.println("close from " + getAddress(webSocket));
+        System.out.println("close from " + Util.getAddress(webSocket));
         modelsBySocket.remove(webSocket);
     }
 
     @Override
     public void onMessage(WebSocket webSocket, String s) {
-        System.out.println(
-                "message from " + getAddress(webSocket) + ": " + s
-        );
+        System.out.println("message from " + Util.getAddress(webSocket) + ": " + s);
         Handler handler = modelsBySocket.get(webSocket);
         JsonNode message = Util.toJson(s);
         String type = message.get("type").textValue();
@@ -62,14 +55,14 @@ public class Server extends WebSocketServer {
                 handler.getQueryInputs().onNext(message.get("text").textValue());
                 break;
             default:
-                throw new IllegalStateException("Unknown message type '"+ type +"': '" + s + "'");
+                throw new IllegalStateException("Unknown message type '" + type + "': '" + s + "'");
         }
     }
 
     @Override
     public void onError(WebSocket webSocket, Exception e) {
         if (webSocket != null) {
-            System.err.println("error:" + getAddress(webSocket));    
+            System.err.println("error:" + Util.getAddress(webSocket));
         }
         e.printStackTrace(System.err);
     }
@@ -80,12 +73,7 @@ public class Server extends WebSocketServer {
         s.start();
         System.out.println("Server started");
         final CountDownLatch shuttingDown = new CountDownLatch(1);
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                shuttingDown.countDown();
-            }
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(shuttingDown::countDown));
         shuttingDown.await();
     }
 }
