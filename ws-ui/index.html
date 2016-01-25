@@ -59,8 +59,7 @@
                 };
                 document.getElementById("go").onclick = function () {
                     send({
-                        "type": "go.click",
-                        "data": {}
+                        "type": "go.click"
                     });
                 };
                 var queryInput = document.getElementById("query");
@@ -77,6 +76,13 @@
                         "type": "instant.enable",
                         "value": instantCheckbox.checked
                     })
+                };
+                var theForm = document.getElementById("theform");
+                theForm.onsubmit = function() {
+                    send({
+                        "type": "enter.press"
+                    });
+                    return false;
                 }
             };
         }
@@ -84,7 +90,7 @@
     </script>
 </head>
 <body onload="loaded()">
-<form onsubmit="return false;">
+<form id="theform">
     <div>
         <label for="query">Query</label>
         <input id="query" type="search"/>

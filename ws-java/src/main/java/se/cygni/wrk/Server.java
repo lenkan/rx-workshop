@@ -57,6 +57,9 @@ public class Server extends WebSocketServer {
             case "instant.enable":
                 handler.getInstantSearchChanges().onNext(message.get("value").asBoolean());
                 break;
+            case "enter.press":
+                handler.getEnterPresses().onNext("");
+                break;
             default:
                 System.out.println("WARN: Unknown message type '" + type + "': '" + s + "'");
         }
