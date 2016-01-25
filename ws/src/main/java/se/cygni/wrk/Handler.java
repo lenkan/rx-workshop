@@ -20,14 +20,15 @@ import java.util.stream.Collectors;
 /**
  * Created by alext on 2016-01-25.
  */
-public class Model {
+public class Handler {
 
     private final PublishSubject<String> goClicks;
     private final PublishSubject<String> queryInputs;
     private final JsonNodeFactory nf;
-    private PublishSubject<JsonNode> messages;
+    private final PublishSubject<JsonNode> messages;
 
-    public Model() {
+    public Handler(PublishSubject<JsonNode> messages) {
+        this.messages = messages;
         goClicks = PublishSubject.create();
         queryInputs = PublishSubject.create();
         nf = JsonNodeFactory.instance;
@@ -57,7 +58,7 @@ public class Model {
                         ArrayNode jsonLinks = nf.arrayNode();
                         jsonLinks.addAll(links.stream().map(nf::textNode).collect(Collectors.toList()));
                         msg.set("links", jsonLinks);
-                        messages.onNext(msg);
+                        this.messages.onNext(msg);
                     }, (e) -> {
                         e.printStackTrace(System.err);
                     }, () -> {
@@ -73,9 +74,5 @@ public class Model {
 
     public Observer<String> getQueryInputs() {
         return queryInputs;
-    }
-
-    public void setMessages(PublishSubject<JsonNode> messages) {
-        this.messages = messages;
     }
 }
