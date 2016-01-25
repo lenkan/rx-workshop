@@ -36,7 +36,8 @@ public class Server extends WebSocketServer {
     }
 
     private String getAddress(WebSocket webSocket) {
-        return webSocket.getRemoteSocketAddress().toString();
+        InetSocketAddress remoteSocketAddress = webSocket.getRemoteSocketAddress();
+        return remoteSocketAddress.toString();
     }
 
     @Override
@@ -67,7 +68,9 @@ public class Server extends WebSocketServer {
 
     @Override
     public void onError(WebSocket webSocket, Exception e) {
-        System.err.println("error:" + getAddress(webSocket));
+        if (webSocket != null) {
+            System.err.println("error:" + getAddress(webSocket));    
+        }
         e.printStackTrace(System.err);
     }
 
