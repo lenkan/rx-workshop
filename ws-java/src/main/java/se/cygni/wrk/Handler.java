@@ -8,26 +8,27 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.RxNetty;
+import io.reactivex.netty.protocol.http.AbstractHttpContentHolder;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import rx.Observable;
 import rx.Observer;
+import rx.functions.FuncN;
 import rx.subjects.PublishSubject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-/**
- * Created by alext on 2016-01-25.
- */
 public class Handler {
     private final PublishSubject<String> goClicks;
     private final PublishSubject<String> queryInputs;
     private final JsonNodeFactory nf;
     private final PublishSubject<JsonNode> messages;
     private final PublishSubject<Boolean> instantSearchChanges;
+    private final PublishSubject<String> enterPresses;
 
     public Handler(PublishSubject<JsonNode> messages) {
         nf = JsonNodeFactory.instance;
@@ -35,6 +36,7 @@ public class Handler {
         goClicks = PublishSubject.create();
         queryInputs = PublishSubject.create();
         instantSearchChanges = PublishSubject.create();
+        enterPresses = PublishSubject.create();
         messages.onNext(createLinksMessage(Collections.singletonList("http://java.sun.com")));
         Observable<String> textOnGoClick = queryInputs.sample(goClicks);
         Observable<String> textOnTypeWhenInstantEnabled = Observable.combineLatest(queryInputs, 
@@ -89,6 +91,10 @@ public class Handler {
 
     public Observer<Boolean> getInstantSearchChanges() {
         return instantSearchChanges;
+    }
+
+    public Observer<String> getEnterPresses() {
+        return enterPresses;
     }
 
     private class InstantType {
