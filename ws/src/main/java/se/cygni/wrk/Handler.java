@@ -14,6 +14,8 @@ import rx.Observer;
 import rx.subjects.PublishSubject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,23 +23,22 @@ import java.util.stream.Collectors;
  * Created by alext on 2016-01-25.
  */
 public class Handler {
-
     private final PublishSubject<String> goClicks;
     private final PublishSubject<String> queryInputs;
     private final JsonNodeFactory nf;
     private final PublishSubject<JsonNode> messages;
 
     public Handler(PublishSubject<JsonNode> messages) {
+        nf = JsonNodeFactory.instance;
         this.messages = messages;
         goClicks = PublishSubject.create();
         queryInputs = PublishSubject.create();
-        nf = JsonNodeFactory.instance;
+        messages.onNext(createLinksMessage(Collections.singletonList("http://connected-to-server.com")));
         Observable<String> delayedTexts = queryInputs.sample(goClicks);
         final Observable<HttpClientResponse<ByteBuf>> requests = delayedTexts.flatMap(text -> {
             final String url = String.format(
                     "http://api.duckduckgo.com/?q=%s&format=json&pretty=1", Util.urlEncode(text)
             );
-            //final String url = "http://durat.io";
             System.out.println("Running request:" + url + " on " + Thread.currentThread().getName());
             final Observable<HttpClientResponse<ByteBuf>> o = RxNetty.createHttpGet(url);
             System.out.println("Created request");
@@ -52,11 +53,7 @@ public class Handler {
                         final ArrayList<JsonNode> relatedTopicsList = Lists.newArrayList(relatedTopics);
                         final List<String> links = relatedTopicsList.stream().filter(r -> r.has("FirstURL")).map(r -> r.get("FirstURL").textValue()).collect(Collectors.toList());
                         System.out.println(links);
-                        ObjectNode msg = nf.objectNode();
-                        msg.put("type", "new.links");
-                        ArrayNode jsonLinks = nf.arrayNode();
-                        jsonLinks.addAll(links.stream().map(nf::textNode).collect(Collectors.toList()));
-                        msg.set("links", jsonLinks);
+                ObjectNode msg = createLinksMessage(links);
                         this.messages.onNext(msg);
                     }, (e) -> {
                         e.printStackTrace(System.err);
@@ -66,12 +63,21 @@ public class Handler {
             );
         });
     }
+    
+    private ObjectNode createLinksMessage(List<String> links) {
+        ObjectNode msg = nf.objectNode();
+        msg.put("type", "new.links");
+        ArrayNode jsonLinks = nf.arrayNode();
+        jsonLinks.addAll(links.stream().map(nf::textNode).collect(Collectors.toList()));
+        msg.set("links", jsonLinks);
+        return msg;
+    }
 
     public PublishSubject<String> getGoClicks() {
         return goClicks;
     }
 
-    public Observer<String> getQueryInputs() {
+    public PublishSubject<String> getQueryInputs() {
         return queryInputs;
     }
 }

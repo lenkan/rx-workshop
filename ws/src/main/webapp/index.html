@@ -30,6 +30,9 @@
                 var l = links[i];
                 var lie = document.createElement("li");
                 var ae = document.createElement("a");
+                ae.onclick = function(src) {
+                    console.log("onclick: " + src);  
+                };
                 ae.setAttribute("href", l);
                 var te = document.createTextNode(l);
                 ae.appendChild(te);
@@ -40,7 +43,7 @@
         
         function loaded() {
             console.log("page loaded");
-            setResult(["http://a.com", "http://b.com", "http://c.com"]);
+            //setResult(["http://a.com", "http://b.com", "http://c.com"]);
             var ws = new WebSocket("ws://localhost:4739");
             ws.onopen = function(event) {
                 console.log("connection open: " + JSON.stringify(event));
@@ -73,7 +76,7 @@
     </script>
 </head>
 <body onload="loaded()">
-<form>
+<form onsubmit="return false;">
     <div>
         <label for="query">Query</label>
         <input id="query" type="search"/>

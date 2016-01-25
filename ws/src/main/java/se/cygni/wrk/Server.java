@@ -23,22 +23,32 @@ public class Server extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
-        System.out.println("connect from " + webSocket.getRemoteSocketAddress().getAddress().getHostAddress());
+        String address = getAddress(webSocket);
+        System.out.println("connect from " + address);
         PublishSubject<JsonNode> messages = PublishSubject.<JsonNode>create();
-        messages.subscribe(json -> webSocket.send(Util.toString(json)));
-        modelsBySocket.put(webSocket, new Handler(messages));
+        messages.subscribe(json -> {
+            String jsonString = Util.toString(json);
+            System.out.println("sending to " + address + " :" + jsonString);
+            webSocket.send(jsonString);
+        });
+        Handler handler = new Handler(messages);
+        modelsBySocket.put(webSocket, handler);
+    }
+
+    private String getAddress(WebSocket webSocket) {
+        return webSocket.getRemoteSocketAddress().toString();
     }
 
     @Override
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-        System.out.println("close from " + webSocket.getRemoteSocketAddress().getAddress().getHostAddress());
+        System.out.println("close from " + getAddress(webSocket));
         modelsBySocket.remove(webSocket);
     }
 
     @Override
     public void onMessage(WebSocket webSocket, String s) {
         System.out.println(
-                "message from " + webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + ": " + s
+                "message from " + getAddress(webSocket) + ": " + s
         );
         Handler handler = modelsBySocket.get(webSocket);
         JsonNode message = Util.toJson(s);
@@ -57,7 +67,7 @@ public class Server extends WebSocketServer {
 
     @Override
     public void onError(WebSocket webSocket, Exception e) {
-        System.err.println("error:" + webSocket.getRemoteSocketAddress().getAddress().getHostAddress());
+        System.err.println("error:" + getAddress(webSocket));
         e.printStackTrace(System.err);
     }
 
