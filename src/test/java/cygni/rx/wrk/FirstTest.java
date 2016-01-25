@@ -21,14 +21,17 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import rx.Observable;
 import rx.observables.ConnectableObservable;
 import rx.observables.JavaFxObservable;
+import rx.schedulers.JavaFxScheduler;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -43,14 +46,14 @@ public class FirstTest extends javafx.application.Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        final Model model = new Model();
-        primaryStage.setTitle("AnkaAnkaGå");
+        primaryStage.setTitle("Overwrk");
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/cygni.png")));
         final GridPane gp = new GridPane();
-        gp.setAlignment(Pos.CENTER);
+        gp.setAlignment(Pos.TOP_LEFT);
         gp.setHgap(10);
         gp.setVgap(10);
         gp.setPadding(new Insets(25));
-        final Scene scene = new Scene(gp, 800, 600);
+        final Scene scene = new Scene(gp);
         primaryStage.setScene(scene);
         gp.add(new Label("Query"), 0, 0);
         final TextField searchField = new TextField();
