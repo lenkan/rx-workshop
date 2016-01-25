@@ -16,8 +16,31 @@
         }
     </style>
     <script>
+        function clear(node) {
+            // http://stackoverflow.com/a/3955238/83741
+            while(node.firstChild) {
+                node.removeChild(node.firstChild);
+            }
+        }
+        
+        function setResult(links) {
+            var ule = document.getElementById("resul");
+            clear(ule);
+            for (var i = 0; i < links.length; i++) {
+                var l = links[i];
+                var lie = document.createElement("li");
+                var ae = document.createElement("a");
+                ae.setAttribute("href", l);
+                var te = document.createTextNode(l);
+                ae.appendChild(te);
+                lie.appendChild(ae);
+                ule.appendChild(lie);
+            }
+        }
+        
         function loaded() {
             console.log("page loaded");
+            setResult(["http://a.com", "http://b.com", "http://c.com"]);
             var ws = new WebSocket("ws://localhost:4739");
             ws.onopen = function(event) {
                 console.log("connection open: " + JSON.stringify(event));
@@ -29,6 +52,7 @@
                     var msg = JSON.parse(msgEvent.data);  
                     console.log("received: " + msgEvent.data);
                     console.log("received: " + msg);
+                    setResult(msg.links);
                 };
                 document.getElementById("go").onclick = function () {
                     send({
@@ -59,10 +83,7 @@
         <input type="checkbox">Instant search</input>
     </div>
     <div id="results">
-        <ul class="res">
-            <li>a</li>
-            <li>b</li>
-            <li>c</li>
+        <ul id="resul" class="res">
         </ul>
     </div>
 </form>

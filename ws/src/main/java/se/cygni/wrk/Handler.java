@@ -32,8 +32,7 @@ public class Handler {
         goClicks = PublishSubject.create();
         queryInputs = PublishSubject.create();
         nf = JsonNodeFactory.instance;
-        Observable<String> delayedTexts = Observable.combineLatest(goClicks, queryInputs, (click, input) -> input)
-                .skipUntil(goClicks);
+        Observable<String> delayedTexts = queryInputs.sample(goClicks);
         final Observable<HttpClientResponse<ByteBuf>> requests = delayedTexts.flatMap(text -> {
             final String url = String.format(
                     "http://api.duckduckgo.com/?q=%s&format=json&pretty=1", Util.urlEncode(text)

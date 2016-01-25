@@ -13,9 +13,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
-/**
- * Created by alext on 2016-01-25.
- */
 public class Server extends WebSocketServer {
     private final Map<WebSocket, Handler> modelsBySocket;
 
