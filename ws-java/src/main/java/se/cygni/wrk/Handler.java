@@ -41,7 +41,7 @@ public class Handler {
         Observable<String> textOnGoClick = queryInputs.sample(goClicks);
         Observable<String> textOnTypeWhenInstantEnabled = Observable.combineLatest(queryInputs,
                 instantSearchChanges, InstantType::new).filter(ie -> ie.instantEnabled)
-                .map(ie -> ie.text);
+                .map(ie -> ie.text).debounce(1, TimeUnit.SECONDS);
         Observable<String> shouldRunRequest = textOnGoClick.mergeWith(textOnTypeWhenInstantEnabled);
         final Observable<HttpClientResponse<ByteBuf>> requests = shouldRunRequest.flatMap(text -> {
             final String url = String.format(
