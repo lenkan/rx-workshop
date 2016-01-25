@@ -1,0 +1,146 @@
+Index: rx-workshop/ws-java/src/main/java/se/cygni/wrk/Handler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- rx-workshop/ws-java/src/main/java/se/cygni/wrk/Handler.java	(revision 4a8c33c0f1c2aa2daf5e3c9a8004a928e566b92a)
++++ rx-workshop/ws-java/src/main/java/se/cygni/wrk/Handler.java	(revision )
+@@ -8,26 +8,27 @@
+ import com.google.common.collect.Lists;
+ import io.netty.buffer.ByteBuf;
+ import io.reactivex.netty.RxNetty;
++import io.reactivex.netty.protocol.http.AbstractHttpContentHolder;
+ import io.reactivex.netty.protocol.http.client.HttpClientResponse;
+ import rx.Observable;
+ import rx.Observer;
++import rx.functions.FuncN;
+ import rx.subjects.PublishSubject;
+ 
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.Collections;
+ import java.util.List;
++import java.util.concurrent.TimeUnit;
+ import java.util.stream.Collectors;
+ 
+-/**
+- * Created by alext on 2016-01-25.
+- */
+ public class Handler {
+     private final PublishSubject<String> goClicks;
+     private final PublishSubject<String> queryInputs;
+     private final JsonNodeFactory nf;
+     private final PublishSubject<JsonNode> messages;
+     private final PublishSubject<Boolean> instantSearchChanges;
++    private final PublishSubject<String> enterPresses;
+ 
+     public Handler(PublishSubject<JsonNode> messages) {
+         nf = JsonNodeFactory.instance;
+@@ -35,41 +36,56 @@
+         goClicks = PublishSubject.create();
+         queryInputs = PublishSubject.create();
+         instantSearchChanges = PublishSubject.create();
++        enterPresses = PublishSubject.create();
+         messages.onNext(createLinksMessage(Collections.singletonList("http://java.sun.com")));
+-        Observable<String> textOnGoClick = queryInputs.sample(goClicks);
+-        Observable<String> textOnTypeWhenInstantEnabled = Observable.combineLatest(queryInputs, 
++        Observable<List<String>> splittedQueryInputs = queryInputs.map(text -> {
++            List<String> fragments = Arrays.asList(text.split(","));
++            return fragments.stream().map(String::trim).collect(Collectors.toList());
++        });
++        Observable<List<String>> textOnGoClick = splittedQueryInputs.sample(goClicks);
++        Observable<List<String>> textOnTypeWhenInstantEnabled = Observable.combineLatest(splittedQueryInputs, 
+                 instantSearchChanges, InstantType::new).filter(ie -> ie.instantEnabled)
+-                .map(ie -> ie.text);
+-        Observable<String> shouldRunRequest = textOnGoClick.mergeWith(textOnTypeWhenInstantEnabled);
+-        final Observable<HttpClientResponse<ByteBuf>> requests = shouldRunRequest.flatMap(text -> {
+-            final String url = String.format(
+-                    "http://api.duckduckgo.com/?q=%s&format=json&pretty=1", Util.urlEncode(text)
+-            );
+-            System.out.println("Running request:" + url + " on " + Thread.currentThread().getName());
+-            final Observable<HttpClientResponse<ByteBuf>> o = RxNetty.createHttpGet(url);
+-            System.out.println("Created request");
+-            return o;
++                .map(ie -> ie.searchTerms);
++        Observable<List<String>> delayedTextTypeWithInstantEnabled = textOnTypeWhenInstantEnabled.debounce(1, TimeUnit
++                .SECONDS);
++        Observable<List<String>> shouldRunRequest = textOnGoClick.mergeWith(delayedTextTypeWithInstantEnabled);
++        final Observable<List<Observable<ByteBuf>>> requests = shouldRunRequest.flatMap(terms -> {
++            List<Observable<HttpClientResponse<ByteBuf>>> outstandingRequests = terms.stream().map(this::sendRequest).collect(Collectors.toList());
++            Observable<List<HttpClientResponse<ByteBuf>>> responses = Observable.zip(outstandingRequests, rs -> {
++                return Arrays.asList(rs).stream().map(r -> (HttpClientResponse<ByteBuf>) r).collect(Collectors.toList());
+-        });
++            });
+-        requests.subscribe(response -> {
+-            response.getContent().subscribe(bb -> {
++            Observable<List<Observable<ByteBuf>>> bleh = responses.flatMap(rs -> {
++                List<Observable<ByteBuf>> bodies = rs.stream().map(r -> r.getContent()).collect(Collectors.toList());
++                Observable<List<String>> links = Observable.zip(bodies, bs -> {
++                    return Arrays.asList(bs).stream().map(o -> (ByteBuf) o).map(b -> extractLinks(b));
++                });
++                return links;
++            });
++            
++            return bleh;
++        });
++        
++    }
++
++    private List<String> extractLinks(ByteBuf bb) {
+-                        final String s = bb.toString(Charsets.UTF_8);
+-                        final JsonNode j = Util.toJson(s);
+-                        final JsonNode relatedTopics = j.get("RelatedTopics");
++        final String s = bb.toString(Charsets.UTF_8);
++        final JsonNode j = Util.toJson(s);
++        final JsonNode relatedTopics = j.get("RelatedTopics");
+ 
+-                        final ArrayList<JsonNode> relatedTopicsList = Lists.newArrayList(relatedTopics);
++        final ArrayList<JsonNode> relatedTopicsList = Lists.newArrayList(relatedTopics);
+-                        final List<String> links = relatedTopicsList.stream().filter(r -> r.has("FirstURL")).map(r -> r.get("FirstURL").textValue()).collect(Collectors.toList());
+-                        System.out.println(links);
+-                ObjectNode msg = createLinksMessage(links);
+-                        this.messages.onNext(msg);
+-                    }, (e) -> {
+-                        e.printStackTrace(System.err);
+-                    }, () -> {
+-                        System.out.println("complete");
++        return (List<String>) relatedTopicsList.stream().filter(r -> r.has("FirstURL")).map(r -> r.get("FirstURL").textValue()).collect(Collectors.toList());
+-                    }
++    }
++
++    private Observable<HttpClientResponse<ByteBuf>> sendRequest(String term) {
++        final String url = String.format(
++                "http://api.duckduckgo.com/?q=%s&format=json&pretty=1", Util.urlEncode(term)
+-            );
++        );
+-        });
++        System.out.println("Running request:" + url + " on " + Thread.currentThread().getName());
++        final Observable<HttpClientResponse<ByteBuf>> o = RxNetty.createHttpGet(url);
++        System.out.println("Created request");
++        return o;
+     }
+-    
++
+     private ObjectNode createLinksMessage(List<String> links) {
+         ObjectNode msg = nf.objectNode();
+         msg.put("type", "new.links");
+@@ -91,12 +107,16 @@
+         return instantSearchChanges;
+     }
+ 
++    public Observer<String> getEnterPresses() {
++        return enterPresses;
++    }
++
+     private class InstantType {
+-        private final String text;
++        private final List<String> searchTerms;
+         private final boolean instantEnabled;
+ 
+-        public InstantType(String text, boolean instantEnabled) {
+-            this.text = text;
++        public InstantType(List<String> searchTerms, boolean instantEnabled) {
++            this.searchTerms = searchTerms;
+             this.instantEnabled = instantEnabled;
+         }
+     }
