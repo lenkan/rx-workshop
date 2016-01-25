@@ -257,7 +257,7 @@ public class RxTest {
                 Observable.zip(Observable.just("a", "b"), Observable.range(1, 10), (a, b) -> a + b).toList().toBlocking().first());
     }
 
-    @Test
+    //@Test
     public void backpressureOom() {
         // Publish subscribes and broadcasts to all current listeners (non-durable topic)
         // Replay subscribes, buffers, and makes sure all listeners are up to date (durable topic)
