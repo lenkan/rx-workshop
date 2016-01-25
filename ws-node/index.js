@@ -10,6 +10,29 @@ function Handler(messages) {
   this.queryInputs = new rx.Subject();
   this.instantSearchChanges = new rx.Subject();
   this.enterPresses = new rx.Subject();
+  this.messages.onNext({
+    type: "new.links",
+    links: ["http://node.js"]
+  });
+  var self = this;
+  var delayedTexts = this.queryInputs.sample(this.goClicks);
+  var requests = delayedTexts.flatMapLatest(function(text) {
+    console.log("searching for '" + text + "' ('" + encodeURIComponent(text) + "')");
+    return rx.Observable.fromPromise(rp("http://api.duckduckgo.com/?q=" + encodeURIComponent(text) + "&format=json&pretty=1"));
+  });
+  requests.subscribe(function(body) {
+    // console.log("got request answer:" + body);
+    var resp = JSON.parse(body);
+    var links = resp.RelatedTopics.filter(function(e) {
+      return e.FirstURL != undefined;
+    }).map(function(e) {
+      return e.FirstURL;
+    });
+    self.messages.onNext({
+      type: "new.links",
+      links: links
+    });
+  });
 }
 
 var server = http.createServer(function(req, resp) {
