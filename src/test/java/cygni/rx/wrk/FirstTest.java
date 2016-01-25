@@ -61,7 +61,6 @@ public class FirstTest extends javafx.application.Application {
         final Button searchButton = new Button("Search");
         gp.add(searchButton, 2, 0);
         final ListView<Object> lw = new ListView<>();
-        lw.setItems(FXCollections.observableArrayList("a", "b", "c"));
         gp.add(lw, 0, 1, 3, 1);
         primaryStage.show();
 
