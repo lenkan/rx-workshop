@@ -69,6 +69,14 @@
                         "type": "query.input",
                         "text": queryInput.value
                     })
+                };
+                var instantCheckbox = document.getElementById("instant");
+                instantCheckbox.onchange = function(e) {
+                    console.log("checkbox change:" + JSON.stringify(e));
+                    send({
+                        "type": "instant.enable",
+                        "value": instantCheckbox.checked
+                    })
                 }
             };
         }
@@ -83,7 +91,7 @@
         <button id="go" type="button">Go</button>
     </div>
     <div>
-        <input type="checkbox">Instant search</input>
+        <input id="instant" type="checkbox">Instant search</input>
     </div>
     <div id="results">
         <ul id="resul" class="res">

@@ -27,15 +27,21 @@ public class Handler {
     private final PublishSubject<String> queryInputs;
     private final JsonNodeFactory nf;
     private final PublishSubject<JsonNode> messages;
+    private final PublishSubject<Boolean> instantSearchChanges;
 
     public Handler(PublishSubject<JsonNode> messages) {
         nf = JsonNodeFactory.instance;
         this.messages = messages;
         goClicks = PublishSubject.create();
         queryInputs = PublishSubject.create();
+        instantSearchChanges = PublishSubject.create();
         messages.onNext(createLinksMessage(Collections.singletonList("http://java.sun.com")));
-        Observable<String> delayedTexts = queryInputs.sample(goClicks);
-        final Observable<HttpClientResponse<ByteBuf>> requests = delayedTexts.flatMap(text -> {
+        Observable<String> textOnGoClick = queryInputs.sample(goClicks);
+        Observable<String> textOnTypeWhenInstantEnabled = Observable.combineLatest(queryInputs, 
+                instantSearchChanges, InstantType::new).filter(ie -> ie.instantEnabled)
+                .map(ie -> ie.text);
+        Observable<String> shouldRunRequest = textOnGoClick.mergeWith(textOnTypeWhenInstantEnabled);
+        final Observable<HttpClientResponse<ByteBuf>> requests = shouldRunRequest.flatMap(text -> {
             final String url = String.format(
                     "http://api.duckduckgo.com/?q=%s&format=json&pretty=1", Util.urlEncode(text)
             );
@@ -79,5 +85,19 @@ public class Handler {
 
     public PublishSubject<String> getQueryInputs() {
         return queryInputs;
+    }
+
+    public Observer<Boolean> getInstantSearchChanges() {
+        return instantSearchChanges;
+    }
+
+    private class InstantType {
+        private final String text;
+        private final boolean instantEnabled;
+
+        public InstantType(String text, boolean instantEnabled) {
+            this.text = text;
+            this.instantEnabled = instantEnabled;
+        }
     }
 }

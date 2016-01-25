@@ -54,8 +54,11 @@ public class Server extends WebSocketServer {
             case "query.input":
                 handler.getQueryInputs().onNext(message.get("text").textValue());
                 break;
+            case "instant.enable":
+                handler.getInstantSearchChanges().onNext(message.get("value").asBoolean());
+                break;
             default:
-                throw new IllegalStateException("Unknown message type '" + type + "': '" + s + "'");
+                System.out.println("WARN: Unknown message type '" + type + "': '" + s + "'");
         }
     }
 
