@@ -79,3 +79,8 @@ See the existing impls for inspiration.
 **Note**: Don't forget that you will get multiple clients if you reload the page!
 
 ##The assignments
+
+##The assignments
+
+1. Make sure that the client result list gets populated with a single URL on connect. Push a "links" message with this URL as soon as the client connects. Hint: the `Handler` class is created when a new client is connected.
+2. 
