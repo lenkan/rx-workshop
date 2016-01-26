@@ -5,10 +5,10 @@ Welcome to the workshop. I hope that you will enjoy it. Please read this readme 
 
 ## Links
 
-Main site for documentation: [http://reactivex.io/](http://reactivex.io/)
-Marble diagrams [http://rxmarbles.com/](http://rxmarbles.com/)
-101 Rx examples [http://rxwiki.wikidot.com/101samples](http://rxwiki.wikidot.com/101samples)
-Rx Operators decision tree [http://reactivex.io/documentation/operators.html](http://reactivex.io/documentation/operators.html) (scroll down)
+* Main site for documentation: [http://reactivex.io/](http://reactivex.io/)
+* Marble diagrams [http://rxmarbles.com/](http://rxmarbles.com/)
+* 101 Rx examples [http://rxwiki.wikidot.com/101samples](http://rxwiki.wikidot.com/101samples)
+* Rx Operators decision tree [http://reactivex.io/documentation/operators.html](http://reactivex.io/documentation/operators.html) (scroll down)
 
 ##First step
 Clone this repo!
