@@ -1,0 +1,431 @@
+{
+  "locked": false,
+  "version": 2,
+  "targets": {
+    "DNX,Version=v4.5.1": {
+      "Fleck/0.13.0.57": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Fleck.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Fleck.dll": {}
+        }
+      },
+      "Microsoft.WebSockets/0.2.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Microsoft.WebSockets.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.WebSockets.dll": {}
+        }
+      },
+      "Newtonsoft.Json/8.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "Rx-Core/2.3.0-beta2": {
+        "type": "package",
+        "dependencies": {
+          "Rx-Interfaces": "2.3.0-beta2"
+        },
+        "compile": {
+          "lib/net45/System.Reactive.Core.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Core.dll": {}
+        }
+      },
+      "Rx-Interfaces/2.3.0-beta2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/System.Reactive.Interfaces.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Interfaces.dll": {}
+        }
+      },
+      "Rx-Linq/2.3.0-beta2": {
+        "type": "package",
+        "dependencies": {
+          "Rx-Core": "2.3.0-beta2",
+          "Rx-Interfaces": "2.3.0-beta2"
+        },
+        "compile": {
+          "lib/net45/System.Reactive.Linq.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Linq.dll": {}
+        }
+      },
+      "Rx-Main/2.3.0-beta2": {
+        "type": "package",
+        "dependencies": {
+          "Rx-Core": "2.3.0-beta2",
+          "Rx-Interfaces": "2.3.0-beta2",
+          "Rx-Linq": "2.3.0-beta2",
+          "Rx-PlatformServices": "2.3.0-beta2"
+        }
+      },
+      "Rx-PlatformServices/2.3.0-beta2": {
+        "type": "package",
+        "dependencies": {
+          "Rx-Core": "2.3.0-beta2",
+          "Rx-Interfaces": "2.3.0-beta2"
+        },
+        "compile": {
+          "lib/net45/System.Reactive.PlatformServices.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.PlatformServices.dll": {}
+        }
+      }
+    },
+    "DNX,Version=v4.5.1/win7-x86": {
+      "Fleck/0.13.0.57": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Fleck.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Fleck.dll": {}
+        }
+      },
+      "Microsoft.WebSockets/0.2.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Microsoft.WebSockets.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.WebSockets.dll": {}
+        }
+      },
+      "Newtonsoft.Json/8.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "Rx-Core/2.3.0-beta2": {
+        "type": "package",
+        "dependencies": {
+          "Rx-Interfaces": "2.3.0-beta2"
+        },
+        "compile": {
+          "lib/net45/System.Reactive.Core.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Core.dll": {}
+        }
+      },
+      "Rx-Interfaces/2.3.0-beta2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/System.Reactive.Interfaces.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Interfaces.dll": {}
+        }
+      },
+      "Rx-Linq/2.3.0-beta2": {
+        "type": "package",
+        "dependencies": {
+          "Rx-Core": "2.3.0-beta2",
+          "Rx-Interfaces": "2.3.0-beta2"
+        },
+        "compile": {
+          "lib/net45/System.Reactive.Linq.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Linq.dll": {}
+        }
+      },
+      "Rx-Main/2.3.0-beta2": {
+        "type": "package",
+        "dependencies": {
+          "Rx-Core": "2.3.0-beta2",
+          "Rx-Interfaces": "2.3.0-beta2",
+          "Rx-Linq": "2.3.0-beta2",
+          "Rx-PlatformServices": "2.3.0-beta2"
+        }
+      },
+      "Rx-PlatformServices/2.3.0-beta2": {
+        "type": "package",
+        "dependencies": {
+          "Rx-Core": "2.3.0-beta2",
+          "Rx-Interfaces": "2.3.0-beta2"
+        },
+        "compile": {
+          "lib/net45/System.Reactive.PlatformServices.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.PlatformServices.dll": {}
+        }
+      }
+    },
+    "DNX,Version=v4.5.1/win7-x64": {
+      "Fleck/0.13.0.57": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Fleck.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Fleck.dll": {}
+        }
+      },
+      "Microsoft.WebSockets/0.2.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Microsoft.WebSockets.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.WebSockets.dll": {}
+        }
+      },
+      "Newtonsoft.Json/8.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "Rx-Core/2.3.0-beta2": {
+        "type": "package",
+        "dependencies": {
+          "Rx-Interfaces": "2.3.0-beta2"
+        },
+        "compile": {
+          "lib/net45/System.Reactive.Core.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Core.dll": {}
+        }
+      },
+      "Rx-Interfaces/2.3.0-beta2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/System.Reactive.Interfaces.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Interfaces.dll": {}
+        }
+      },
+      "Rx-Linq/2.3.0-beta2": {
+        "type": "package",
+        "dependencies": {
+          "Rx-Core": "2.3.0-beta2",
+          "Rx-Interfaces": "2.3.0-beta2"
+        },
+        "compile": {
+          "lib/net45/System.Reactive.Linq.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Linq.dll": {}
+        }
+      },
+      "Rx-Main/2.3.0-beta2": {
+        "type": "package",
+        "dependencies": {
+          "Rx-Core": "2.3.0-beta2",
+          "Rx-Interfaces": "2.3.0-beta2",
+          "Rx-Linq": "2.3.0-beta2",
+          "Rx-PlatformServices": "2.3.0-beta2"
+        }
+      },
+      "Rx-PlatformServices/2.3.0-beta2": {
+        "type": "package",
+        "dependencies": {
+          "Rx-Core": "2.3.0-beta2",
+          "Rx-Interfaces": "2.3.0-beta2"
+        },
+        "compile": {
+          "lib/net45/System.Reactive.PlatformServices.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.PlatformServices.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Fleck/0.13.0.57": {
+      "type": "package",
+      "sha512": "13oUW9lmvyOKT0N+pJaE6p47vDN7ifpiQimjD39KorzcONj0SM7t9p/J+6djq7vMaqqoOuuup9PBgBN7D2Hr/g==",
+      "files": [
+        "Fleck.0.13.0.57.nupkg",
+        "Fleck.0.13.0.57.nupkg.sha512",
+        "Fleck.nuspec",
+        "lib/net40/Fleck.dll"
+      ]
+    },
+    "Microsoft.WebSockets/0.2.3": {
+      "type": "package",
+      "sha512": "zGYKZjt7miEu6VMy4mHsjDWPdqJ3dzN5sABT0DxD9WXk5/s0iNQaBVVCzfjjG04MnJ4I9ELCuubfIE0Yk1sBFQ==",
+      "files": [
+        "lib/net45/Microsoft.WebSockets.dll",
+        "Microsoft.WebSockets.0.2.3.nupkg",
+        "Microsoft.WebSockets.0.2.3.nupkg.sha512",
+        "Microsoft.WebSockets.nuspec"
+      ]
+    },
+    "Newtonsoft.Json/8.0.2": {
+      "type": "package",
+      "sha512": "e5yWmEfu68rmtG431zl9N/7PlNKQDIuiDW5MHlEFAZcecakcxrIGnKqrPAtWNILzK2oNanRB5cD150MYhECK3g==",
+      "files": [
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll",
+        "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.xml",
+        "Newtonsoft.Json.8.0.2.nupkg",
+        "Newtonsoft.Json.8.0.2.nupkg.sha512",
+        "Newtonsoft.Json.nuspec",
+        "tools/install.ps1"
+      ]
+    },
+    "Rx-Core/2.3.0-beta2": {
+      "type": "package",
+      "sha512": "ufLvowEi6bzrCrRSEY3RS/gUbV6axNAT9uzsbGDWeAShcwSBbOSxlcioQsvlYCgzAAB15WK9dM1f0sUk4NTE6w==",
+      "files": [
+        "lib/net40/System.Reactive.Core.dll",
+        "lib/net40/System.Reactive.Core.XML",
+        "lib/net45/System.Reactive.Core.dll",
+        "lib/net45/System.Reactive.Core.XML",
+        "lib/net46/System.Reactive.Core.dll",
+        "lib/net46/System.Reactive.Core.XML",
+        "lib/portable-net40+sl5+win8+wp8/System.Reactive.Core.dll",
+        "lib/portable-net40+sl5+win8+wp8/System.Reactive.Core.XML",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/System.Reactive.Core.dll",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/System.Reactive.Core.XML",
+        "lib/portable-win81+wpa81/System.Reactive.Core.dll",
+        "lib/portable-win81+wpa81/System.Reactive.Core.XML",
+        "lib/sl5/System.Reactive.Core.dll",
+        "lib/sl5/System.Reactive.Core.XML",
+        "lib/windows8/System.Reactive.Core.dll",
+        "lib/windows8/System.Reactive.Core.XML",
+        "lib/windowsphone8/System.Reactive.Core.dll",
+        "lib/windowsphone8/System.Reactive.Core.XML",
+        "Rx-Core.2.3.0-beta2.nupkg",
+        "Rx-Core.2.3.0-beta2.nupkg.sha512",
+        "Rx-Core.nuspec"
+      ]
+    },
+    "Rx-Interfaces/2.3.0-beta2": {
+      "type": "package",
+      "sha512": "YgUHTMj9qNKF2+zdXsAAkXy5cYvTHD/OSXG0PkVu/QDRDvHcINR+EsKqh3Dh9Tjssvsivs8cXuO3rV0GnSqMbg==",
+      "files": [
+        "lib/net40/System.Reactive.Interfaces.dll",
+        "lib/net40/System.Reactive.Interfaces.XML",
+        "lib/net45/System.Reactive.Interfaces.dll",
+        "lib/net45/System.Reactive.Interfaces.XML",
+        "lib/net46/System.Reactive.Interfaces.dll",
+        "lib/net46/System.Reactive.Interfaces.XML",
+        "lib/portable-net40+sl5+win8+wp8/System.Reactive.Interfaces.dll",
+        "lib/portable-net40+sl5+win8+wp8/System.Reactive.Interfaces.XML",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/System.Reactive.Interfaces.dll",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/System.Reactive.Interfaces.XML",
+        "lib/portable-win81+wpa81/System.Reactive.Interfaces.dll",
+        "lib/portable-win81+wpa81/System.Reactive.Interfaces.XML",
+        "lib/sl5/System.Reactive.Interfaces.dll",
+        "lib/sl5/System.Reactive.Interfaces.XML",
+        "lib/windows8/System.Reactive.Interfaces.dll",
+        "lib/windows8/System.Reactive.Interfaces.XML",
+        "lib/windowsphone8/System.Reactive.Interfaces.dll",
+        "lib/windowsphone8/System.Reactive.Interfaces.XML",
+        "Rx-Interfaces.2.3.0-beta2.nupkg",
+        "Rx-Interfaces.2.3.0-beta2.nupkg.sha512",
+        "Rx-Interfaces.nuspec"
+      ]
+    },
+    "Rx-Linq/2.3.0-beta2": {
+      "type": "package",
+      "sha512": "3VTu/AvESi12ucOYWlpv4aZT3xkV7BYG4zUHV+IV3fj+mWx0C9M8jtn99oQ2AZsLx7wsWpYNqCiwyPeqwNmWHQ==",
+      "files": [
+        "lib/net40/System.Reactive.Linq.dll",
+        "lib/net40/System.Reactive.Linq.XML",
+        "lib/net45/System.Reactive.Linq.dll",
+        "lib/net45/System.Reactive.Linq.XML",
+        "lib/net46/System.Reactive.Linq.dll",
+        "lib/net46/System.Reactive.Linq.XML",
+        "lib/portable-net40+sl5+win8+wp8/System.Reactive.Linq.dll",
+        "lib/portable-net40+sl5+win8+wp8/System.Reactive.Linq.XML",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/System.Reactive.Linq.dll",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/System.Reactive.Linq.XML",
+        "lib/portable-win81+wpa81/System.Reactive.Linq.dll",
+        "lib/portable-win81+wpa81/System.Reactive.Linq.XML",
+        "lib/sl5/System.Reactive.Linq.dll",
+        "lib/sl5/System.Reactive.Linq.XML",
+        "lib/windows8/System.Reactive.Linq.dll",
+        "lib/windows8/System.Reactive.Linq.XML",
+        "lib/windowsphone8/System.Reactive.Linq.dll",
+        "lib/windowsphone8/System.Reactive.Linq.XML",
+        "Rx-Linq.2.3.0-beta2.nupkg",
+        "Rx-Linq.2.3.0-beta2.nupkg.sha512",
+        "Rx-Linq.nuspec"
+      ]
+    },
+    "Rx-Main/2.3.0-beta2": {
+      "type": "package",
+      "sha512": "zss81QC+I0UiKJhNOnjDY6ildp0vR+QKZfxZh4E1wmUR7JivePlMf86Qashesywm+rCKVtLeHKj/eZk5gpeUaw==",
+      "files": [
+        "Rx-Main.2.3.0-beta2.nupkg",
+        "Rx-Main.2.3.0-beta2.nupkg.sha512",
+        "Rx-Main.nuspec"
+      ]
+    },
+    "Rx-PlatformServices/2.3.0-beta2": {
+      "type": "package",
+      "sha512": "AFDbK+gVGqd2rNBwsXjrWX+PwWIQ34IE8DnP2wnl+LT7menKe1mpjwUANTFN349zMZY3eTtr34N4vtdHgX65yw==",
+      "files": [
+        "lib/net40/System.Reactive.PlatformServices.dll",
+        "lib/net40/System.Reactive.PlatformServices.XML",
+        "lib/net45/System.Reactive.PlatformServices.dll",
+        "lib/net45/System.Reactive.PlatformServices.XML",
+        "lib/net46/System.Reactive.PlatformServices.dll",
+        "lib/net46/System.Reactive.PlatformServices.XML",
+        "lib/portable-net40+sl5+win8+wp8/System.Reactive.PlatformServices.dll",
+        "lib/portable-net40+sl5+win8+wp8/System.Reactive.PlatformServices.XML",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/System.Reactive.PlatformServices.dll",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/System.Reactive.PlatformServices.XML",
+        "lib/portable-win81+wpa81/System.Reactive.PlatformServices.dll",
+        "lib/portable-win81+wpa81/System.Reactive.PlatformServices.XML",
+        "lib/sl5/System.Reactive.PlatformServices.dll",
+        "lib/sl5/System.Reactive.PlatformServices.XML",
+        "lib/windows8/System.Reactive.PlatformServices.dll",
+        "lib/windows8/System.Reactive.PlatformServices.XML",
+        "lib/windowsphone8/System.Reactive.PlatformServices.dll",
+        "lib/windowsphone8/System.Reactive.PlatformServices.XML",
+        "Rx-PlatformServices.2.3.0-beta2.nupkg",
+        "Rx-PlatformServices.2.3.0-beta2.nupkg.sha512",
+        "Rx-PlatformServices.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "": [
+      "Rx-Main >= 2.3.0-beta2",
+      "Fleck >= 0.13.0.57",
+      "Newtonsoft.Json >= 8.0.2",
+      "Microsoft.WebSockets >= 0.2.3"
+    ],
+    "DNX,Version=v4.5.1": []
+  }
+}
