@@ -22,9 +22,10 @@ In order to start the UI, open [ws-ui/index.html](ws-ui/index.html) (locally) in
 The UI will try to establish a connection to a backend on page load. It assumes the address `ws://localhost:4739`.
 Check the console for errors (Ctrl+Shift+J in Chrome), and reload the page if you restart the server.
 
-###Starting a backend
+####Starting the .NET Backend
+Open solution in Visual Studio 2015. Press play.
 
-You can choose one of the existing backends, or write your own:
+Start editing in Handler.cs to implement the necessary functionality.
 
 ####Starting the Java backend
 Tested with `OpenJDK 1.8.0_66-internal` and `Maven 3.2.5`.
@@ -177,4 +178,3 @@ SPOILER warning! Scroll down for more.
 <br>
 <br>
 6. zip, amongst others
- 

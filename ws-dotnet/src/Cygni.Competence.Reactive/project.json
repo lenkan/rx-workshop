@@ -1,0 +1,27 @@
+﻿{
+    "version": "1.0.0-*",
+    "description": "Cygni.Competence.Reactive Console Application",
+    "authors": [ "Daniel" ],
+    "tags": [ "" ],
+    "projectUrl": "",
+    "licenseUrl": "",
+
+    "compilationOptions": {
+        "emitEntryPoint": true
+    },
+
+    "dependencies": {
+        "Rx-Main": "2.3.0-beta2",
+        "Fleck": "0.13.0.57",
+        "Newtonsoft.Json": "8.0.2",
+        "Microsoft.WebSockets": "0.2.3"
+    },
+
+    "commands": {
+        "Cygni.Competence.Reactive": "Cygni.Competence.Reactive"
+    },
+
+    "frameworks": {
+        "dnx451": { }
+    }
+}
