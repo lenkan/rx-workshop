@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
@@ -38,7 +40,7 @@ public class RxTest {
                 .flatMap(this::doB)
                 .flatMap(this::doC)
                 .subscribe(this::done, ex -> giveUp());
-        assertEquals("abc", result.poll(1, TimeUnit.SECONDS));
+        assertEquals("abc", result.poll(1, SECONDS));
     }
 
     @Test
@@ -56,14 +58,14 @@ public class RxTest {
                         () -> {
                         }
                 );
-        threw.await(1, TimeUnit.SECONDS);
+        threw.await(1, SECONDS);
         assertEquals(Arrays.asList(-3, -2, -1), produced);
     }
 
     @Test
     public void unsubscribe() throws InterruptedException {
         CountDownLatch unsubscribed = new CountDownLatch(1);
-        Observable<Integer> o = Observable.interval(1, TimeUnit.MILLISECONDS).map(l -> Arrays.asList(1, 2, 3)).flatMap
+        Observable<Integer> o = Observable.interval(1, MILLISECONDS).map(l -> Arrays.asList(1, 2, 3)).flatMap
                 (Observable::from);
         Subscriber<Integer> s = new Subscriber<Integer>() {
             @Override
@@ -91,7 +93,7 @@ public class RxTest {
 
     @Test
     public void testSubscriber() {
-        Observable<Integer> o = Observable.interval(1, TimeUnit.MILLISECONDS).map(l -> Arrays.asList(1, 2, 3)).flatMap
+        Observable<Integer> o = Observable.interval(1, MILLISECONDS).map(l -> Arrays.asList(1, 2, 3)).flatMap
                 (Observable::from).take(6);
         Subscriber<Integer> s = new Subscriber<Integer>() {
             @Override
@@ -125,8 +127,8 @@ public class RxTest {
         Observable.from(Executors.newSingleThreadExecutor().submit(() -> 3));
         Observable.from(new Integer[]{1, 2, 3});
         Observable.just(1, 2, 3);
-        Observable.timer(1, TimeUnit.SECONDS);
-        Observable.interval(1, TimeUnit.SECONDS);
+        Observable.timer(1, SECONDS);
+        Observable.interval(1, SECONDS);
         Observable.range(0, 10);
         Observable.defer(() -> Observable.just(1));
     }
@@ -166,7 +168,7 @@ public class RxTest {
                                 .startWith(42)
                 ).concatWith(
                         Observable
-                                .interval(1, TimeUnit.MILLISECONDS)
+                                .interval(1, MILLISECONDS)
                                 .map(l -> (int) (long) l)
                                 .skip(2)
                                 .map(i -> 100 + i)
@@ -189,11 +191,11 @@ public class RxTest {
         testSubscriber.assertReceivedOnNext(Collections.singletonList(3));
 
         final TestScheduler testScheduler = new TestScheduler();
-        final Observable<Long> o = Observable.interval(1, TimeUnit.MILLISECONDS, testScheduler).sample(1, TimeUnit.SECONDS, testScheduler)
+        final Observable<Long> o = Observable.interval(1, MILLISECONDS, testScheduler).sample(1, SECONDS, testScheduler)
                 .take(3);
         final TestSubscriber<Object> testSubscriber2 = new TestSubscriber<>();
         o.subscribe(testSubscriber2);
-        testScheduler.advanceTimeBy(100, TimeUnit.SECONDS);
+        testScheduler.advanceTimeBy(100, SECONDS);
 
         testSubscriber2.awaitTerminalEvent();
         testSubscriber2.assertReceivedOnNext(Arrays.asList(998L, 1998L, 2998L));
@@ -202,25 +204,25 @@ public class RxTest {
     @Test
     public void combine() {
         final TestScheduler ts = new TestScheduler();
-        final Observable<String> a = Observable.timer(2, TimeUnit.SECONDS, ts).map(t -> "a");
-        final Observable<String> b = Observable.timer(1, TimeUnit.SECONDS, ts).map(t -> "b");
+        final Observable<String> a = Observable.timer(2, SECONDS, ts).map(t -> "a");
+        final Observable<String> b = Observable.timer(1, SECONDS, ts).map(t -> "b");
         final Observable<String> combo = a.mergeWith(b);
         final TestSubscriber<String> suba = new TestSubscriber<>();
         combo.subscribe(suba);
-        ts.advanceTimeBy(3, TimeUnit.SECONDS);
+        ts.advanceTimeBy(3, SECONDS);
         suba.assertReceivedOnNext(Arrays.asList("b", "a"));
 
         final TestScheduler ts2 = new TestScheduler();
-        final Observable<String> everySecondAn = Observable.interval(1, TimeUnit.SECONDS, ts2).lift(index()).map(i -> "a" + i);
-        final Observable<String> everySecondBn = Observable.interval(1, TimeUnit.SECONDS, ts2).lift(index()).map(i -> "b" + i);
+        final Observable<String> everySecondAn = Observable.interval(1, SECONDS, ts2).lift(index()).map(i -> "a" + i);
+        final Observable<String> everySecondBn = Observable.interval(1, SECONDS, ts2).lift(index()).map(i -> "b" + i);
         final Observable<Observable<String>> firstATThenB =
-                Observable.timer(0, TimeUnit.SECONDS, ts2).flatMap(t -> Observable.just(everySecondAn)).mergeWith(
-                        Observable.timer(3, TimeUnit.SECONDS, ts2).flatMap(t -> Observable.just(everySecondBn))
+                Observable.timer(0, SECONDS, ts2).flatMap(t -> Observable.just(everySecondAn)).mergeWith(
+                        Observable.timer(3, SECONDS, ts2).flatMap(t -> Observable.just(everySecondBn))
                 );
         final Observable<String> flattened = Observable.switchOnNext(firstATThenB);
         final TestSubscriber<Object> subb = new TestSubscriber<>();
         flattened.subscribe(subb);
-        ts2.advanceTimeBy(7, TimeUnit.SECONDS);
+        ts2.advanceTimeBy(7, SECONDS);
         subb.assertReceivedOnNext(Arrays.asList("a1", "a2", "b1", "b2", "b3", "b4"));
     }
 
@@ -235,9 +237,9 @@ public class RxTest {
         assert !Observable.just(1, 2).contains(3).toBlocking().first();
         final TestScheduler sched = new TestScheduler();
         final TestSubscriber<Object> ts = new TestSubscriber<>();
-        final Observable<Long> o = Observable.timer(0, 1, TimeUnit.MILLISECONDS, sched).skipUntil(Observable.timer(3, TimeUnit.MILLISECONDS, sched));
+        final Observable<Long> o = Observable.timer(0, 1, MILLISECONDS, sched).skipUntil(Observable.timer(3, MILLISECONDS, sched));
         o.subscribe(ts);
-        sched.advanceTimeBy(10, TimeUnit.MILLISECONDS);
+        sched.advanceTimeBy(10, MILLISECONDS);
         ts.assertReceivedOnNext(Arrays.asList(3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L));
         assertEquals(Arrays.asList(-2, -1), Observable.just(-2, -1, 0, 1, 2).takeWhile(i -> i < 0).toList().toBlocking().first());
     }
@@ -247,10 +249,10 @@ public class RxTest {
         final TestScheduler sched = new TestScheduler();
         final TestSubscriber<Object> ts = new TestSubscriber<>();
         final Observable<Long> o = Observable
-                .timer(0, 1, TimeUnit.MILLISECONDS, sched)
-                .skipUntil(Observable.timer(3, TimeUnit.MILLISECONDS, sched));
+                .timer(0, 1, MILLISECONDS, sched)
+                .skipUntil(Observable.timer(3, MILLISECONDS, sched));
         o.subscribe(ts);
-        sched.advanceTimeBy(10, TimeUnit.MILLISECONDS);
+        sched.advanceTimeBy(10, MILLISECONDS);
         ts.assertReceivedOnNext(Arrays.asList(3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L));
     }
 
@@ -277,11 +279,65 @@ public class RxTest {
                 Observable.zip(Observable.just("a", "b"), Observable.range(1, 10), (a, b) -> a + b).toList().toBlocking().first());
     }
 
+    @Test
+    public void simpleFilter() {
+        final Observable<Integer> o = Observable.just(0, 1, 2, 3).filter(i -> (i % 2) == 0);
+        assertEquals(
+                Arrays.asList(0, 2),
+                o.toList().toBlocking().first()
+        );
+    }
+
+    @Test
+    public void simpleFlatMap() {
+        final Observable<String> o = Observable.just("a,b", "c,d")
+                .flatMap(s -> Observable.from(s.split(",")));
+        assertEquals(
+                Arrays.asList("a", "b", "c", "d"),
+                o.toList().toBlocking().first()
+        );
+    }
+
+    @Test
+    public void simpleMerge() {
+        final TestScheduler ts = new TestScheduler();
+        final Observable<String> o = Observable
+                .interval(1, SECONDS, ts)
+                .map(i -> "a" + i)
+                .mergeWith(
+                        Observable
+                                .interval(1, SECONDS, ts)
+                                .delay(500, MILLISECONDS, ts)
+                                .map(i -> "b" + i)
+                ).takeUntil(
+                        Observable
+                                .timer(3500, MILLISECONDS, ts)
+                );
+        final TestSubscriber<Object> sub = new TestSubscriber<>();
+        o.subscribe(sub);
+        ts.advanceTimeBy(4, SECONDS);
+        sub.assertReceivedOnNext(
+                Arrays.asList("a0", "b0", "a1", "b1", "a2")
+        );
+        sub.assertTerminalEvent();
+    }
+
+    @Test
+    public void simpleScan() {
+        final Observable<String> o = Observable
+                .just("a", "b", "c")
+                .scan((s1, s2) -> s1 + s2);
+        assertEquals(
+                Arrays.asList("a", "ab", "abc"),
+                o.toList().toBlocking().first()
+        );
+    }
+
     //@Test
     public void backpressureOom() {
         // Publish subscribes and broadcasts to all current listeners (non-durable topic)
         // Replay subscribes, buffers, and makes sure all listeners are up to date (durable topic)
-        final ConnectableObservable<Long> hotSource = Observable.interval(1, TimeUnit.MILLISECONDS).replay();
+        final ConnectableObservable<Long> hotSource = Observable.interval(1, MILLISECONDS).replay();
         // subscribeOn determines from which thread the subscribers will get the values pushed
         final Observable<Long> o = hotSource.take(3).map(i -> {
             sleep(100L);
