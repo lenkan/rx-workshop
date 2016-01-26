@@ -128,7 +128,7 @@ SPOILER warning! Scroll down for more.
 <br>
 <br>
 <br>   
-2b. http://reactivex.io/documentation/operators/sample.html
+2b. http://reactivex.io/documentation/operators/sample.html (not the time-based one)
 
 <br>
 <br>
