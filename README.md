@@ -70,7 +70,7 @@ and answer with messages like these:
 
 Convert incoming messages to `Observable`s: one type of `Observable` per type of incoming message and one type of `Observable`
 for outgoing messages. Implement the functionality by building rx pipelines with the incoming `Observable`s and pushing the result to
-the outgoing `Observable`. See the existing impls for inspiration.
+the outgoing `Observable`. A simple way of bridging is to use a [Subject](http://reactivex.io/documentation/subject.html). See the existing impls for inspiration.
 
 **Note**: Don't forget that you will get multiple clients if you reload the page!
 
