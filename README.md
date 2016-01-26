@@ -82,5 +82,7 @@ See the existing impls for inspiration.
 
 ##The assignments
 
-1. Make sure that the client result list gets populated with a single URL on connect. Push a "links" message with this URL as soon as the client connects. Hint: the `Handler` class is created when a new client is connected.
-2. 
+1. Make sure that the client result list gets populated with a single URL on connect. This can be any hardcoded URL such as `http://www.welcometomybackend.com` or similar. Push a "links" message with this URL as soon as the client connects. Hint: the `Handler` class is created when a new client is connected.
+2. Do an actual search when the client presses the "go" button. Use the `goClicks` and `queryInput` observables to build a pipeline which performs a http request to the DuckDuckGo API which the entered search term. The API is specified at [https://duckduckgo.com/api](https://duckduckgo.com/api). Filter out the `RelatedTopic`s which have `FirstURL`s
+3. Expand 2 to also trigger when the user presses the enter key in the search field.
+
