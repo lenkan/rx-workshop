@@ -156,6 +156,26 @@ public class RxTest {
     }
 
     @Test
+    public void aMoreElaborateContrivedExample() {
+        final Observable<Integer> o = Observable
+                .defer(() ->
+                        Observable
+                                .just(5)
+                                .flatMap(i -> Observable.range(0, i))
+                                .scan((i, j) -> i + j)
+                                .startWith(42)
+                ).concatWith(
+                        Observable
+                                .interval(1, TimeUnit.MILLISECONDS)
+                                .map(l -> (int) (long) l)
+                                .skip(2)
+                                .map(i -> 100 + i)
+                )
+                .take(9);
+        assertEquals(Arrays.asList(42, 0, 1, 3, 6, 10, 102, 103, 104), o.toList().toBlocking().first());
+    }
+
+    @Test
     public void filter() {
         assert Observable.sequenceEqual(
                 Observable.just(1, 2).filter(i -> (i % 2) == 0),
@@ -196,7 +216,7 @@ public class RxTest {
         final Observable<Observable<String>> firstATThenB =
                 Observable.timer(0, TimeUnit.SECONDS, ts2).flatMap(t -> Observable.just(everySecondAn)).mergeWith(
                         Observable.timer(3, TimeUnit.SECONDS, ts2).flatMap(t -> Observable.just(everySecondBn))
-                        );
+                );
         final Observable<String> flattened = Observable.switchOnNext(firstATThenB);
         final TestSubscriber<Object> subb = new TestSubscriber<>();
         flattened.subscribe(subb);
@@ -206,20 +226,20 @@ public class RxTest {
 
     @Test
     public void mergeNonTimed() {
-        assertEquals(Arrays.asList(1,2,3,4), Observable.just(1,2).mergeWith(Observable.just(3,4)).toList().toBlocking().first());
+        assertEquals(Arrays.asList(1, 2, 3, 4), Observable.just(1, 2).mergeWith(Observable.just(3, 4)).toList().toBlocking().first());
     }
 
     @Test
     public void conditional() {
-        assert Observable.just(1,2).all(x -> x > 0).toBlocking().first();
-        assert !Observable.just(1,2).contains(3).toBlocking().first();
+        assert Observable.just(1, 2).all(x -> x > 0).toBlocking().first();
+        assert !Observable.just(1, 2).contains(3).toBlocking().first();
         final TestScheduler sched = new TestScheduler();
         final TestSubscriber<Object> ts = new TestSubscriber<>();
         final Observable<Long> o = Observable.timer(0, 1, TimeUnit.MILLISECONDS, sched).skipUntil(Observable.timer(3, TimeUnit.MILLISECONDS, sched));
         o.subscribe(ts);
         sched.advanceTimeBy(10, TimeUnit.MILLISECONDS);
-        ts.assertReceivedOnNext(Arrays.asList(3L,4L,5L,6L,7L,8L,9L,10L));
-        assertEquals(Arrays.asList(-2,-1), Observable.just(-2,-1,0,1,2).takeWhile(i -> i < 0).toList().toBlocking().first());
+        ts.assertReceivedOnNext(Arrays.asList(3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L));
+        assertEquals(Arrays.asList(-2, -1), Observable.just(-2, -1, 0, 1, 2).takeWhile(i -> i < 0).toList().toBlocking().first());
     }
 
     @Test
@@ -231,24 +251,24 @@ public class RxTest {
                 .skipUntil(Observable.timer(3, TimeUnit.MILLISECONDS, sched));
         o.subscribe(ts);
         sched.advanceTimeBy(10, TimeUnit.MILLISECONDS);
-        ts.assertReceivedOnNext(Arrays.asList(3L,4L,5L,6L,7L,8L,9L,10L));
+        ts.assertReceivedOnNext(Arrays.asList(3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L));
     }
 
     @Test
     public void testingByBlocking() {
-        assertEquals(Arrays.asList(1,2,3), Observable.just(1,2,3).toList().toBlocking().first());
+        assertEquals(Arrays.asList(1, 2, 3), Observable.just(1, 2, 3).toList().toBlocking().first());
     }
 
     @Test
     public void abstracting() {
-        assertEquals(Arrays.asList(1L,2L), Observable.just("a", "b").lift(index()).toList().toBlocking().first());
+        assertEquals(Arrays.asList(1L, 2L), Observable.just("a", "b").lift(index()).toList().toBlocking().first());
     }
 
     @Test
     public void mathAggregate() {
-        assertEquals(Arrays.asList(1,2,3,4), Observable.just(1,2).concatWith(Observable.just(3,4)).toList().toBlocking().first());
+        assertEquals(Arrays.asList(1, 2, 3, 4), Observable.just(1, 2).concatWith(Observable.just(3, 4)).toList().toBlocking().first());
         assertEquals(2, (long) Observable.just("a", "b").count().toBlocking().first());
-        assertEquals(10, (long) Observable.just(1,2,3,4).reduce(0, (a, b) -> a + b).toBlocking().first());
+        assertEquals(10, (long) Observable.just(1, 2, 3, 4).reduce(0, (a, b) -> a + b).toBlocking().first());
     }
 
     @Test
@@ -288,11 +308,10 @@ public class RxTest {
         o.subscribe(s);
         hotSource.connect();
         sleep(100000L);
-        ts.assertReceivedOnNext(Arrays.asList(0L,1L,2L));
+        ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L));
     }
 
-    private void sleep(long millis)
-    {
+    private void sleep(long millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
