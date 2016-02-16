@@ -1,4 +1,4 @@
-package se.cygni.wrk;
+package se.cygni.competence.rx.workshop;
 
 import rx.Observable;
 import rx.Observer;

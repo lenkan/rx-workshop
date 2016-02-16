@@ -1,4 +1,4 @@
-package se.cygni.wrk;
+package se.cygni.competence.rx.workshop;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;

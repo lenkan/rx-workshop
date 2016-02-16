@@ -1,4 +1,4 @@
-package se.cygni.wrk;
+package se.cygni.competence.rx.workshop;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;

@@ -1,4 +1,4 @@
-package se.cygni.rx.examples;
+package se.cygni.competence.rx.examples;
 
 import org.junit.Before;
 import org.junit.Test;
