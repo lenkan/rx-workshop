@@ -38,7 +38,7 @@ public class ServerTest {
                 } else if (answersProcessed.getCount() == 3) {
                     assertEquals("{\"type\":\"backend.status\",\"status\":\"searching\"}", s);
                 } else if (answersProcessed.getCount() == 2) {
-                    assertEquals("{\"type\":\"backend.status\",\"status\":\"search done\"}", s);
+                    assertEquals("{\"type\":\"backend.status\",\"status\":\"search for 'test' done\"}", s);
                 } else if (answersProcessed.getCount() == 1) {
                     assertEquals("{\"type\":\"new.links\",\"links\":[\"https://duckduckgo.com/Software_testing\",\"https://duckduckgo.com/statistical_hypothesis_testing\",\"https://duckduckgo.com/Test_(wrestler)\",\"https://duckduckgo.com/Test_(assessment)\"]}", s);
                 } else {

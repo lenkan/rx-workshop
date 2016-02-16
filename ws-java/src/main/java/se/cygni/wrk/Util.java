@@ -10,6 +10,7 @@ import org.java_websocket.WebSocket;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,10 +47,10 @@ public class Util {
         return webSocket.getRemoteSocketAddress().toString();
     }
 
-    public static ObjectNode createLinksMessage(List<String> links) {
+    public static ObjectNode createLinksMessage(List<URI> links) {
         ObjectNode msg = createMessage("new.links");
         ArrayNode jsonLinks = JsonNodeFactory.instance.arrayNode();
-        jsonLinks.addAll(links.stream().map(JsonNodeFactory.instance::textNode).collect(Collectors.toList()));
+        jsonLinks.addAll(links.stream().map(URI::toString).map(JsonNodeFactory.instance::textNode).collect(Collectors.toList()));
         msg.set("links", jsonLinks);
         return msg;
     }
