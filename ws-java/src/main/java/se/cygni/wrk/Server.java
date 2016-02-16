@@ -110,7 +110,7 @@ public class Server extends WebSocketServer {
     }
 
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
-        final Server s = new Server(4739, new Handler());
+        final Server s = new Server(4739, new Handler(new DuckDuckGoClient()));
         s.start();
         System.out.println("Server started");
         final CountDownLatch shuttingDown = new CountDownLatch(1);

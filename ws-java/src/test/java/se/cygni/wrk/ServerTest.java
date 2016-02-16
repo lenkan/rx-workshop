@@ -1,6 +1,5 @@
 package se.cygni.wrk;
 
-import jdk.nashorn.internal.objects.NativeJSON;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.junit.Test;
@@ -17,7 +16,7 @@ public class ServerTest {
 
     @Test
     public void doSearch() throws UnknownHostException, URISyntaxException, InterruptedException {
-        final Server s = new Server(0, new Handler());
+        final Server s = new Server(0, new Handler(new DuckDuckGoClient()));
         s.start();
         //It ain't pretty but there's no choice (except socket polling) AFAIK
         Thread.sleep(100);
