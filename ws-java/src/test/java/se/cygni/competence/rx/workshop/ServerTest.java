@@ -16,7 +16,7 @@ public class ServerTest {
 
     @Test
     public void doSearch() throws UnknownHostException, URISyntaxException, InterruptedException {
-        final Server s = new Server(0, new Handler(new DuckDuckGoClient()));
+        final Server s = new Server(0, new FacitHandler(new DuckDuckGoClient()));
         s.start();
         //It ain't pretty but there's no choice (except socket polling) AFAIK
         Thread.sleep(100);

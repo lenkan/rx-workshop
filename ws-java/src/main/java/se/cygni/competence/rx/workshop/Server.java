@@ -37,10 +37,10 @@ public class Server extends WebSocketServer {
     }
 
     private final Map<WebSocket, ConnectionState> stateBySocket;
-    private final Handler handler;
+    private final ConnectionHandler handler;
 
 
-    public Server(int port, final Handler handler) throws UnknownHostException {
+    public Server(int port, final ConnectionHandler handler) throws UnknownHostException {
         super(new InetSocketAddress(port));
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> e.printStackTrace());
         WebSocketImpl.DEBUG = false;
@@ -111,7 +111,7 @@ public class Server extends WebSocketServer {
     }
 
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
-        final Server s = new Server(4739, new Handler(new DuckDuckGoClient()));
+        final Server s = new Server(4739, new EmptyHandler(new DuckDuckGoClient()));
         s.start();
         System.out.println("Server started");
         final CountDownLatch shuttingDown = new CountDownLatch(1);

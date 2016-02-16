@@ -2,17 +2,15 @@ package se.cygni.competence.rx.workshop;
 
 import rx.Observable;
 import rx.Observer;
-import rx.observables.ConnectableObservable;
 
 import java.net.URI;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-public class Handler {
+public class EmptyHandler implements ConnectionHandler {
 
     private final DuckDuckGoClient duckDuckGoClient;
 
-    public Handler(DuckDuckGoClient duckDuckGoClient) {
+    public EmptyHandler(DuckDuckGoClient duckDuckGoClient) {
         this.duckDuckGoClient = duckDuckGoClient;
     }
 
@@ -39,6 +37,7 @@ public class Handler {
      * @param links pushing a list of URL strings to this observer will replace the result list with the given links.
      * @param status pushing a string to this observer will update the "backend status" field.
      */
+    @Override
     public void onConnectionOpen(
             Observable<String> goClicks,
             Observable<String> queryInputs,
@@ -46,34 +45,6 @@ public class Handler {
             Observable<String> enterPresses,
             Observer<List<URI>> links,
             Observer<String> status) {
-        Observable<String> textOnGoClick = queryInputs.sample(goClicks);
-        final Observable<String> textOnEnterPress = queryInputs.sample(enterPresses);
-        final Observable<String> textOnTypeWhenInstantEnabled = Observable.combineLatest(queryInputs,
-                instantSearchChanges, InstantType::new).filter(ie -> ie.instantEnabled)
-                .map(ie -> ie.text);
-        textOnTypeWhenInstantEnabled.map(o -> "listening").subscribe(status);
-        Observable<String> debouncedTextOnTypeWhenInstantEnabled = textOnTypeWhenInstantEnabled.debounce(1, TimeUnit.SECONDS);
-        Observable<String> textOnAction = textOnGoClick.mergeWith(textOnEnterPress).mergeWith(debouncedTextOnTypeWhenInstantEnabled);
-        textOnAction.map(o -> "searching").subscribe(status);
-        textOnAction.subscribe(s -> {
-            System.out.println("About to search");
-        });
-        final Observable<List<URI>> requests = textOnAction.flatMap(duckDuckGoClient::searchRelated);
-        //Don't want two subscribers on requests since it triggers double requests being issued
-        final ConnectableObservable<List<URI>> doneRequests = requests.publish();
-        doneRequests.zipWith(textOnAction, (o, text) -> "search for '" + text + "' done").subscribe(status);
-        doneRequests.subscribe(links);
-        doneRequests.connect();
-        status.onNext("ready");
-    }
-
-    private class InstantType {
-        private final String text;
-        private final boolean instantEnabled;
-
-        public InstantType(String text, boolean instantEnabled) {
-            this.text = text;
-            this.instantEnabled = instantEnabled;
-        }
+        //TODO: Implement me!
     }
 }
