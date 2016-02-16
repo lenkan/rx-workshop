@@ -18,6 +18,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class Server extends WebSocketServer {
 
+
     class ConnectionState {
         private final PublishSubject<String> goClicks;
         private final PublishSubject<String> queryInputs;
@@ -39,6 +40,9 @@ public class Server extends WebSocketServer {
     private final Map<WebSocket, ConnectionState> stateBySocket;
     private final ConnectionHandler handler;
 
+    public Server(final ConnectionHandler handler) throws UnknownHostException {
+        this(4739, handler);
+    }
 
     public Server(int port, final ConnectionHandler handler) throws UnknownHostException {
         super(new InetSocketAddress(port));
@@ -110,12 +114,16 @@ public class Server extends WebSocketServer {
         e.printStackTrace(System.err);
     }
 
-    public static void main(String[] args) throws UnknownHostException, InterruptedException {
-        final Server s = new Server(4739, new EmptyHandler(new DuckDuckGoClient()));
+    static void startAndServe(ConnectionHandler handler) throws UnknownHostException, InterruptedException {
+        final Server s = new Server(handler);
         s.start();
         System.out.println("Server started");
         final CountDownLatch shuttingDown = new CountDownLatch(1);
         Runtime.getRuntime().addShutdownHook(new Thread(shuttingDown::countDown));
         shuttingDown.await();
+    }
+
+    public static void main(String[] args) throws UnknownHostException, InterruptedException {
+        startAndServe(new EmptyHandler(new DuckDuckGoClient()));
     }
 }
