@@ -19,8 +19,8 @@ Clone this repo!
 Tested with `Chromium 47.0.2526.73 Ubuntu 15.10 (64-bit)`.
 
 In order to start the UI, open [ws-ui/index.html](ws-ui/index.html) (locally) in Chrome (or another browser if you dare :) ). 
-The UI will try to establish a connection to a backend on page load. It assumes the address `ws://localhost:4739`.
-Check the console for errors (Ctrl+Shift+J in Chrome), and reload the page if you restart the server.
+The UI will try to establish a connection to a backend periodically. It assumes the address `ws://localhost:4739`.
+Check the console for errors (Ctrl+Shift+J in Chrome).
 
 ####Starting the .NET Backend
 Open solution in Visual Studio 2015. Press play.
@@ -30,8 +30,14 @@ Start editing in Handler.cs to implement the necessary functionality.
 ####Starting the Java backend
 Tested with `OpenJDK 1.8.0_66-internal` and `Maven 3.2.5`.
 
-`cd` into [ws-java](ws-java/) and run `mvn exec:java` to start the server. Refresh the UI page and type into the text box. You should
-see the app logging events to stdout:
+Open the maven project [ws-java](ws-java/) in your favourite editor and run the 
+main method in the `Server` class.
+ 
+If you really want to run it from the command line, run `mvn exec:java` to start the server.
+
+Start editing in EmptyHandler.java to implement the necessary functionality.
+
+When the UI page connects you should see the app logging events to stdout:
 
 ```
 Server started
@@ -40,12 +46,6 @@ message from /0:0:0:0:0:0:0:1:50200: {"type":"query.input","text":"a"}
 message from /0:0:0:0:0:0:0:1:50200: {"type":"query.input","text":"ap"}
 message from /0:0:0:0:0:0:0:1:50200: {"type":"query.input","text":"apa"}
 ```
-
-You can also just open the maven project in your favourite editor and run `Server.main`.
-
-Start editing in Handler.java to implement the necessary functionality.
-
-**Note**: there are some util methods in `Util.java` for doing URLencoding and JSON conversion. Save time by using it!
 
 ####Starting the Node backend
 Tested with `Node.JS 5.5.0`.
@@ -60,7 +60,7 @@ msg: {"type":"utf8","utf8Data":"{\"type\":\"query.input\",\"text\":\"ap\"}"}
 msg: {"type":"utf8","utf8Data":"{\"type\":\"query.input\",\"text\":\"apa\"}"}
 ```
 
-Open `index.js` in your favourite editor (not Emacs ;P ) and edit the `Handler` function to implement the functionality.
+Open `index.js` in your favourite editor and edit the `Handler` function to implement the functionality.
 
 ####Making your own backend
 Make a server which accepts WS connections on ws://localhost:4739. Accept text messages like these:
@@ -88,9 +88,29 @@ See the existing impls for inspiration.
 
 ##The assignments
 
-##The assignments
-
-1. Make sure that the client result list gets populated with a single URL on connect. This can be any hardcoded URL such as `http://www.welcometomybackend.com` or similar. Push a "links" message with this URL as soon as the client connects. Hint: The `Handler` class is created when a new client is connected.
+1. Update the backend status panel in the UI with the text "ready" when the client connects to the backend. 
+   Do this by manually pushing a message to the status observer by calling the "onNext" method on it.
+2. Also manually push a placeholder URL to the result list on connect. This can be any URL, like "www.hello.com" or whatever.
+   The result list is represented by the "links" observer.
+3. Instead of pushing the placeholder URL straight away on connect, simulate a search by delaying the push of the 
+   placeholder URL until text is entered in the search field. The "queryInput" observable emits the search input whenever it changes. 
+   Use these events to trigger the pushing of your placeholder URL. 
+   Use "map" to transform the search input observable to an observable which emits your placeholder URL whenever the search input changes.
+   Connect your placeholder URL observable to the "links" observer.  
+   The connection can be made by registering the observer as a subscriber to the observable, using the "subscribe" method.
+4. Instead of pushing just the placeholder URL, emit a URL based on the text in the search field. So if you enter enter the text "test" in the search field, 
+    you should respond by updating the result list with "www.test.com".
+5. Push status messages before and after the simulated search result are produced. 
+   Push "searching for '<search input>'" just before and "search for '<search input>' done" just after. To push the 
+   first message, add a second observer to the search input observable by calling "map" on the search input observable a second time.
+   Your map should transform the search input to a status message. Now connect the resulting observable to the status observer.  
+   The second status message can be produced in a very similar way by hooking into the pipeline just before the result is pushed to the client.
+6. Back to searching. Simulate a more realistic search delay by writing a "search" method and calling it in the 
+   pipeline. It should be blocking and Introducing a one second sleep while doing the search. 
+7.                        
+5. When the client has entered a word 'xyz' in the search field, update the result list with a link to www.xyz.com (a form of echo). So if I enter "hello", I
+   should get a result back of "www.hello.com". This should behave like instant search, i.e you can just listen  
+6.   
 2. Do an actual search when the client presses the "go" button. Use the `goClicks` and `queryInputs` observables to build a pipeline which performs a http request to the DuckDuckGo API which the entered search term. The API is specified at [https://duckduckgo.com/api](https://duckduckgo.com/api). Filter out the `RelatedTopic`s which have `FirstURL`s. Push the links as in assignment 1.
 3. Expand 2 to also trigger when the user presses the enter key in the search field.
 4. Build instant search. Trigger search whenever the user presses keys in the search field IN ADDITION TO the previously implemented triggering methods.
