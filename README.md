@@ -1,7 +1,7 @@
 # rx-workshop
 
 Hello!
-Welcome to the workshop. I hope that you will enjoy it. Please read this readme to save yourself some time :)
+Welcome to the workshop. I hope that you will enjoy it. 
 
 ## Links
 
@@ -19,8 +19,8 @@ Clone this repo!
 Tested with `Chromium 47.0.2526.73 Ubuntu 15.10 (64-bit)`.
 
 In order to start the UI, open [ws-ui/index.html](ws-ui/index.html) (locally) in Chrome (or another browser if you dare :) ). 
-The UI will try to establish a connection to a backend periodically. It assumes the address `ws://localhost:4739`.
-Check the console for errors (Ctrl+Shift+J in Chrome).
+The UI will try to establish a connection to a backend periodically. The connection light will turn green when it has established the connection.
+ It assumes the address `ws://localhost:4739`. Check the console for errors (Ctrl+Shift+J in Chrome).
 
 ####Starting the .NET Backend
 Open solution in Visual Studio 2015. Press play.
@@ -114,10 +114,11 @@ See the existing impls for inspiration.
 
 ##Bonus assignments
 
-7. "Instant search" happens to quickly after keypresses and you're flooding the server. Make sure that the search is only triggered 500 ms after the user stops typing. Use `debounce`.    
-8. Delay the search until the client presses the "go" button. Use [sample](http://reactivex.io/RxJava/javadoc/rx/Observable.html#sample(rx.Observable))
-9. Expand 2 to also trigger when the user presses the enter key in the search field.
-10. Re-enable instant search when the "instant search" checkbox is checked.
+7. "Instant search" happens too quickly after keypresses and you're flooding the server. Make sure that the search is only triggered 500 ms after the user stops typing. Use `debounce`.    
+8. Delay the search until the client presses the "go" button. Use the `goClicks` observable and [sample](http://reactivex.io/RxJava/javadoc/rx/Observable.html#sample(rx.Observable))
+9. Also trigger the search when the user presses the enter key in the search field.
+10. Re-enable instant search when the "instant search" checkbox is checked. One way of doing this is to pair up the latest checkbox state with the latest search phrase whenever either one of them changes. 
+   Then you only let the search phrases pass if they are paired with a `checked` boolean flag. Can you find the operators?
 11. Support multiple search phrases separated by comma (","). So if you search for "grass, spring", you should perform two HTTP requests against the duckduckgo API and combine the results before showing them to the user.
 12. Use two search engines. Apart from duckduckgo, you are to query wikipedia [https://www.mediawiki.org/wiki/API:Search](https://www.mediawiki.org/wiki/API:Search).
 13. Build a new status indicator in the UI for ongoing backend requests. It should be able to indicate outstanding duckduckgo requests as well outstanding wikipedia requests.
