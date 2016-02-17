@@ -246,7 +246,10 @@ public class RxTest {
             @Override
             public void call(Subscriber<? super T> subscriber) {
                 if (!subscriber.isUnsubscribed()) {
-                    cf1.thenAccept(subscriber::onNext);
+                    cf1.thenAccept((t) -> {
+                        subscriber.onNext(t);
+                        subscriber.onCompleted();
+                    });
                 }
             }
         });
@@ -408,6 +411,16 @@ public class RxTest {
     }
 
     @Test
+    public void simpleMap() {
+        final Observable<String> o = Observable.just(0, 10, 15, 20)
+                .map(i -> Integer.toHexString(i));
+        assertEquals(
+                Arrays.asList("0", "a", "f", "14"),
+                o.toList().toBlocking().first()
+        );
+    }
+
+    @Test
     public void simpleFlatMap() {
         final Observable<String> o = Observable.just("a,b", "c,d")
                 .flatMap(s -> Observable.from(s.split(",")));
@@ -439,6 +452,20 @@ public class RxTest {
                 Arrays.asList("a0", "b0", "a1", "b1", "a2")
         );
         sub.assertTerminalEvent();
+    }
+
+    @Test
+    public void simplerMerge() {
+        final CompletableFuture<String> a = new CompletableFuture<>();
+        final CompletableFuture<String> b = new CompletableFuture<>();
+        final Observable<String> oa = fromCompletableFuture(a);
+        final Observable<String> ob = fromCompletableFuture(b);
+        final Observable<String> total = oa.mergeWith(ob);
+        final TestSubscriber<String> ts = new TestSubscriber<>();
+        total.subscribe(ts);
+        b.complete("b");
+        a.complete("a");
+        ts.assertReceivedOnNext(Arrays.asList("b", "a"));
     }
 
     @Test
