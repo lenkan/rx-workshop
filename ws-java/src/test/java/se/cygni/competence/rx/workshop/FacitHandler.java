@@ -30,8 +30,7 @@ public class FacitHandler implements ConnectionHandler {
         Observable<String> textOnGoClick = queryInputs.sample(goClicks);
         final Observable<String> textOnEnterPress = queryInputs.sample(enterPresses);
         final Observable<String> textOnTypeWhenInstantEnabled = Observable.combineLatest(queryInputs,
-                instantSearchChanges, InstantType::new).filter(ie -> ie.instantEnabled)
-                .map(ie -> ie.text);
+                instantSearchChanges, (phrase, checked) -> checked? phrase : "").filter(p -> !p.isEmpty());
         textOnTypeWhenInstantEnabled.map(o -> "listening").subscribe(status);
         Observable<String> debouncedTextOnTypeWhenInstantEnabled = textOnTypeWhenInstantEnabled.debounce(1, TimeUnit.SECONDS);
         Observable<String> textOnAction = textOnGoClick.mergeWith(textOnEnterPress).mergeWith(debouncedTextOnTypeWhenInstantEnabled);
@@ -46,16 +45,6 @@ public class FacitHandler implements ConnectionHandler {
         doneRequests.subscribe(links);
         doneRequests.connect();
         status.onNext("ready");
-    }
-
-    private class InstantType {
-        private final String text;
-        private final boolean instantEnabled;
-
-        public InstantType(String text, boolean instantEnabled) {
-            this.text = text;
-            this.instantEnabled = instantEnabled;
-        }
     }
 
     public static void main(String[] args) throws InterruptedException, UnknownHostException {
