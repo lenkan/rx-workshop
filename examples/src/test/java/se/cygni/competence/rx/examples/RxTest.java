@@ -431,6 +431,47 @@ public class RxTest {
     }
 
     @Test
+    public void betterFlatMap() {
+        final TestScheduler sched = new TestScheduler();
+        final Observable<String> squashed = Observable.just("1,3", "2,4")
+                .flatMap(s -> {
+                    final String[] parts = s.split(",");
+                    final Long firstDelay = Long.valueOf(parts[0]);
+                    final Long secondDelay = Long.valueOf(parts[1]);
+                    final Observable<String> t1Observable = Observable
+                            .timer(firstDelay, SECONDS, sched).map(i -> parts[0]);
+                    final Observable<String> t2Observable = Observable
+                            .timer(secondDelay, SECONDS, sched).map(i -> parts[1]);
+                    return Observable.merge(t1Observable, t2Observable);
+                });
+        final TestSubscriber<String> ts = new TestSubscriber<>();
+        squashed.subscribe(ts);
+        sched.advanceTimeBy(5, TimeUnit.SECONDS);
+        ts.assertReceivedOnNext(Arrays.asList("1", "2", "3", "4"));
+    }
+
+    @Test
+    public void betterMapToObservableMerge() {
+        final TestScheduler sched = new TestScheduler();
+        final Observable<Observable<String>> o = Observable.just("1,3", "2,4")
+                .map(s -> {
+                    final String[] parts = s.split(",");
+                    final Long firstDelay = Long.valueOf(parts[0]);
+                    final Long secondDelay = Long.valueOf(parts[1]);
+                    final Observable<String> t1Observable = Observable
+                            .timer(firstDelay, SECONDS, sched).map(i -> parts[0]);
+                    final Observable<String> t2Observable = Observable
+                            .timer(secondDelay, SECONDS, sched).map(i -> parts[1]);
+                    return Observable.merge(t1Observable, t2Observable);
+                });
+        final Observable<String> squashed = Observable.merge(o);
+        final TestSubscriber<String> ts = new TestSubscriber<>();
+        squashed.subscribe(ts);
+        sched.advanceTimeBy(5, TimeUnit.SECONDS);
+        ts.assertReceivedOnNext(Arrays.asList("1", "2", "3", "4"));
+    }
+
+    @Test
     public void simpleMerge() {
         final TestScheduler ts = new TestScheduler();
         final Observable<String> o = Observable
