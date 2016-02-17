@@ -99,102 +99,27 @@ See the existing impls for inspiration.
    Connect your placeholder URL observable to the "links" observer.  
    The connection can be made by registering the observer as a subscriber to the observable, using the "subscribe" method.
 4. Instead of pushing just the placeholder URL, emit a URL based on the text in the search field. So if you enter enter the text "test" in the search field, 
-    you should respond by updating the result list with "www.test.com".
+    you should respond by updating the result list with a single element with a single URI, for example "www.test.com".
 5. Push status messages before and after the simulated search result are produced. 
    Push "searching for '<search input>'" just before and "search for '<search input>' done" just after. To push the 
    first message, add a second observer to the search input observable by calling "map" on the search input observable a second time.
    Your map should transform the search input to a status message. Now connect the resulting observable to the status observer.  
    The second status message can be produced in a very similar way by hooking into the pipeline just before the result is pushed to the client.
-6. Back to searching. Simulate a more realistic search delay by writing a "search" method and calling it in the 
-   pipeline. It should be blocking and Introducing a one second sleep while doing the search. 
-7.                        
-5. When the client has entered a word 'xyz' in the search field, update the result list with a link to www.xyz.com (a form of echo). So if I enter "hello", I
-   should get a result back of "www.hello.com". This should behave like instant search, i.e you can just listen  
-6.   
-2. Do an actual search when the client presses the "go" button. Use the `goClicks` and `queryInputs` observables to build a pipeline which performs a http request to the DuckDuckGo API which the entered search term. The API is specified at [https://duckduckgo.com/api](https://duckduckgo.com/api). Filter out the `RelatedTopic`s which have `FirstURL`s. Push the links as in assignment 1.
-3. Expand 2 to also trigger when the user presses the enter key in the search field.
-4. Build instant search. Trigger search whenever the user presses keys in the search field IN ADDITION TO the previously implemented triggering methods.
-5. Respect the "instant search" checkbox. Only perform instant search when this check box is enabled.
-6. "Instant search" happens to quickly after keypresses and you're flooding the server. Make sure that the search is only triggered 500 ms after the user stops typing.
-7. Support multiple search phrases separated by comma (","). So if you search for "grass, spring", you should perform two HTTP requests against the duckduckgo API and combine the results before showing them to the user.
-8. Use two search engined. Apart from duckduckgo, you are to query wikipedia    [https://www.mediawiki.org/wiki/API:Search](https://www.mediawiki.org/wiki/API:Search).
-9. Build a new status indicator in the UI for ongoing backend requests. It should be able to indicate outstanding duckduckgo requests as well outstanding wikipedia requests.
-10. You're fast, make up your own assignment!
-  b. Interleave the search results - ie [duckduckgo #1, wikipedia #1, duckduckgo #1, wikipedia #2 ... ].
+6. Preparation for a real search. Instead of producing the mock list with a simple max in excercise 4, 
+   simulate a potential delay by wrapping the list in an observable. To do this, make a method with the signature
+   `Observable<List<URI>> search(String searchTerm)`. Use `Observable.from` to construct an observable from your mock list and return
+   it from the method. Now try to hook a call to this new method into the chain where the old `map` call is. On you first try, you most likely end up
+   with an observable of observables. How can you get away from this situation?   
+6. Now for the real searching. In your handler there is a `duckDuckGoClient` member. Call its `searchRelated` method instead of your mock search. 
 
-##Extra Hints
-If you get stuck you can check here for hints on the respective assignment.
-SPOILER warning! Scroll down for more.
+##Bonus assignments
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-2a. Look for a way of letting through the `queryInputs` when `goClicks` events arrive. 
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>   
-2b. http://reactivex.io/documentation/operators/sample.html (not the time-based one)
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>   
-3. merge.
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-5. combineLatest
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-6. debounce 
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-6. zip, amongst others
+7. "Instant search" happens to quickly after keypresses and you're flooding the server. Make sure that the search is only triggered 500 ms after the user stops typing. Use `debounce`.    
+8. Delay the search until the client presses the "go" button. Use [sample](http://reactivex.io/RxJava/javadoc/rx/Observable.html#sample(rx.Observable))
+9. Expand 2 to also trigger when the user presses the enter key in the search field.
+10. Re-enable instant search when the "instant search" checkbox is checked.
+11. Support multiple search phrases separated by comma (","). So if you search for "grass, spring", you should perform two HTTP requests against the duckduckgo API and combine the results before showing them to the user.
+12. Use two search engines. Apart from duckduckgo, you are to query wikipedia [https://www.mediawiki.org/wiki/API:Search](https://www.mediawiki.org/wiki/API:Search).
+13. Build a new status indicator in the UI for ongoing backend requests. It should be able to indicate outstanding duckduckgo requests as well outstanding wikipedia requests.
+    b. Interleave the search results - ie [duckduckgo #1, wikipedia #1, duckduckgo #1, wikipedia #2 ... ].
+14. You're fast, make up your own assignment!
