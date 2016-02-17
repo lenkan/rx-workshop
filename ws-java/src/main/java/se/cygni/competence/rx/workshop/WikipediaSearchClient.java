@@ -30,7 +30,7 @@ public class WikipediaSearchClient {
                 .unsafeSecure();
     }
 
-    public Observable<List<URI>> searchRelated(String searchTerm) {
+    public Observable<List<String>> searchRelated(String searchTerm) {
         final String relativeUrl = String.format("/w/api.php?action=query&generator=search&gsrsearch=%s&format=json&gsrprop=snippet&prop=info&inprop=url", Util.urlEncode(searchTerm));
         System.out.println("Running request:" + relativeUrl + " on " + Thread.currentThread().getName());
         final HttpClientRequest<ByteBuf, ByteBuf> req = client.createGet(relativeUrl);
@@ -42,7 +42,7 @@ public class WikipediaSearchClient {
                 .doOnError(Throwable::printStackTrace);
     }
 
-    private static List<URI> parseLinks(String s) {
+    private static List<String> parseLinks(String s) {
         final JsonNode root = Util.toJson(s);
 
         if (root.has("query")) {
@@ -52,18 +52,9 @@ public class WikipediaSearchClient {
                 Iterable<JsonNode> it = pages::elements;
                 return StreamSupport.stream(it.spliterator(), false)
                         .map(n -> n.get("canonicalurl").textValue())
-                        .map(WikipediaSearchClient::mkUri)
                         .collect(Collectors.toList());
             }
         }
         return Collections.emptyList();
-    }
-
-    private static URI mkUri(String url) {
-        try {
-            return new URI(url);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

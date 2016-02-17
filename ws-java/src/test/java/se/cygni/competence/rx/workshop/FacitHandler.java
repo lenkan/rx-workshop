@@ -38,7 +38,11 @@ public class FacitHandler implements ConnectionHandler {
         textOnAction.subscribe(s -> {
             System.out.println("About to search");
         });
-        final Observable<List<String>> requests = textOnAction.flatMap(duckDuckGoClient::searchRelated);
+        final Observable<List<String>> requests = textOnAction.flatMap((searchTerm) -> {
+            Observable<List<String>> dResults = duckDuckGoClient.searchRelated(searchTerm);
+            Observable<List<String>> wResults = new WikipediaSearchClient().searchRelated(searchTerm);
+            return dResults.mergeWith(wResults);
+        });
         //Don't want two subscribers on requests since it triggers double requests being issued
         final ConnectableObservable<List<String>> doneRequests = requests.publish();
         doneRequests.zipWith(textOnAction, (o, text) -> "search for '" + text + "' done").subscribe(status);
