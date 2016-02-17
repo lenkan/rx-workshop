@@ -1,6 +1,7 @@
 package se.cygni.competence.rx.workshop;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
@@ -8,12 +9,13 @@ import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import rx.Observable;
+import rx.functions.Action1;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * A client to wikipedia search
@@ -24,7 +26,8 @@ public class WikipediaSearchClient {
     private HttpClient<ByteBuf, ByteBuf> client;
 
     public WikipediaSearchClient() {
-        client = HttpClient.newClient("en.wikipedia.org", 443);
+        client = HttpClient.newClient("en.wikipedia.org", 443)
+                .unsafeSecure();
     }
 
     public Observable<List<URI>> searchRelated(String searchTerm) {
@@ -35,18 +38,25 @@ public class WikipediaSearchClient {
         return req
                 .flatMap(HttpClientResponse::getContent)
                 .reduce("", (s, byteBuf) -> s+ byteBuf.toString(Charsets.UTF_8))
-                .flatMap(all -> Observable.just(parseLinks(all)));
+                .flatMap(all -> Observable.just(parseLinks(all)))
+                .doOnError(Throwable::printStackTrace);
     }
 
     private static List<URI> parseLinks(String s) {
-        final JsonNode j = Util.toJson(s);
-        final JsonNode relatedTopics = j.get("RelatedTopics");
+        final JsonNode root = Util.toJson(s);
 
-        final ArrayList<JsonNode> relatedTopicsList = Lists.newArrayList(relatedTopics);
-        return relatedTopicsList.stream().filter(r -> r.has("FirstURL"))
-                .map(r -> r.get("FirstURL").textValue())
-                .map(WikipediaSearchClient::mkUri)
-                .collect(Collectors.toList());
+        if (root.has("query")) {
+            JsonNode query = root.get("query");
+            if (query.has("pages")) {
+                JsonNode pages = query.get("pages");
+                Iterable<JsonNode> it = pages::elements;
+                return StreamSupport.stream(it.spliterator(), false)
+                        .map(n -> n.get("canonicalurl").textValue())
+                        .map(WikipediaSearchClient::mkUri)
+                        .collect(Collectors.toList());
+            }
+        }
+        return Collections.emptyList();
     }
 
     private static URI mkUri(String url) {
