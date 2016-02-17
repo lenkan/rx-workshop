@@ -433,7 +433,7 @@ public class RxTest {
     @Test
     public void betterFlatMap() {
         final TestScheduler sched = new TestScheduler();
-        final Observable<String> squashed = Observable.just("1,3", "2,4")
+        final Observable<String> squashed = Observable.just("3,1", "4,2")
                 .flatMap(s -> {
                     final String[] parts = s.split(",");
                     final Long firstDelay = Long.valueOf(parts[0]);
@@ -453,7 +453,7 @@ public class RxTest {
     @Test
     public void betterMapToObservableMerge() {
         final TestScheduler sched = new TestScheduler();
-        final Observable<Observable<String>> o = Observable.just("1,3", "2,4")
+        final Observable<Observable<String>> o = Observable.just("3,1", "4,2")
                 .map(s -> {
                     final String[] parts = s.split(",");
                     final Long firstDelay = Long.valueOf(parts[0]);
@@ -493,6 +493,16 @@ public class RxTest {
                 Arrays.asList("a0", "b0", "a1", "b1", "a2")
         );
         sub.assertTerminalEvent();
+    }
+
+    @Test
+    public void simpleZip() {
+        final Observable<String> letters = Observable.just("a", "b");
+        final Observable<String> numbers = Observable.just("1", "2");
+        final Observable<String> zipped = letters.zipWith(numbers, (letter, number) -> letter + number);
+        final TestSubscriber<String> ts = new TestSubscriber<>();
+        zipped.subscribe(ts);
+        ts.assertReceivedOnNext(Arrays.asList("a1", "b2"));
     }
 
     @Test
