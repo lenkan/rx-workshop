@@ -63,7 +63,11 @@ public class Server extends WebSocketServer {
             send(webSocket, Util.createStatusMessage(status));
         });
         stateBySocket.put(webSocket, state);
-        handler.onConnectionOpen(state.goClicks, state.queryInputs, state.instantSearchChanges, state.enterPresses, state.links, state.status);
+        try {
+            handler.onConnectionOpen(state.goClicks, state.queryInputs, state.instantSearchChanges, state.enterPresses, state.links, state.status);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void send(WebSocket webSocket, ObjectNode jsonMessage) {

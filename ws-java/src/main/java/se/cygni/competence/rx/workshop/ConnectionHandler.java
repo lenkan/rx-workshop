@@ -37,5 +37,5 @@ public interface ConnectionHandler {
             Observable<Boolean> instantSearchChanges,
             Observable<String> enterPresses,
             Observer<List<URI>> links,
-            Observer<String> status);
+            Observer<String> status) throws Exception;
 }
