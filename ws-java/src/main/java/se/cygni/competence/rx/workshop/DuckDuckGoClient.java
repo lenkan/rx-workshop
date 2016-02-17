@@ -34,7 +34,7 @@ public class DuckDuckGoClient {
      * @param searchTerm the search term to search for
      * @return a list of links, where each link is the DuckDuckGo URL for a related search term.
      */
-    public Observable<List<URI>> searchRelated(String searchTerm) {
+    public Observable<List<String>> searchRelated(String searchTerm) {
         final String relativeUrl = String.format("/?q=%s&format=json&pretty=1", Util.urlEncode(searchTerm));
         System.out.println("Running request:" + relativeUrl + " on " + Thread.currentThread().getName());
         final HttpClientRequest<ByteBuf, ByteBuf> req = client.createGet(relativeUrl);
@@ -45,22 +45,14 @@ public class DuckDuckGoClient {
                 .flatMap(all -> Observable.just(parseLinks(all)));
     }
 
-    private static List<URI> parseLinks(String s) {
+    private static List<String> parseLinks(String s) {
         final JsonNode j = Util.toJson(s);
         final JsonNode relatedTopics = j.get("RelatedTopics");
 
         final ArrayList<JsonNode> relatedTopicsList = Lists.newArrayList(relatedTopics);
         return relatedTopicsList.stream().filter(r -> r.has("FirstURL"))
                 .map(r -> r.get("FirstURL").textValue())
-                .map(DuckDuckGoClient::mkUri)
                 .collect(Collectors.toList());
     }
 
-    private static URI mkUri(String url) {
-        try {
-            return new URI(url);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

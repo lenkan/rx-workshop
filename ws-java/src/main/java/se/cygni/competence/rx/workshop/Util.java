@@ -47,10 +47,10 @@ public class Util {
         return webSocket.getRemoteSocketAddress().toString();
     }
 
-    public static ObjectNode createLinksMessage(List<URI> links) {
+    public static ObjectNode createLinksMessage(List<String> links) {
         ObjectNode msg = createMessage("new.links");
         ArrayNode jsonLinks = JsonNodeFactory.instance.arrayNode();
-        jsonLinks.addAll(links.stream().map(URI::toString).map(JsonNodeFactory.instance::textNode).collect(Collectors.toList()));
+        jsonLinks.addAll(links.stream().map(JsonNodeFactory.instance::textNode).collect(Collectors.toList()));
         msg.set("links", jsonLinks);
         return msg;
     }

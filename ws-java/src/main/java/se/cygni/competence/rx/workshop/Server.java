@@ -22,7 +22,7 @@ public class Server extends WebSocketServer {
     class ConnectionState {
         private final PublishSubject<String> goClicks;
         private final PublishSubject<String> queryInputs;
-        private final PublishSubject<List<URI>> links;
+        private final PublishSubject<List<String>> links;
         private final PublishSubject<Boolean> instantSearchChanges;
         private final PublishSubject<String> enterPresses;
         private final PublishSubject<String> status;

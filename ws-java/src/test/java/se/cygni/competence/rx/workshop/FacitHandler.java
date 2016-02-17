@@ -25,7 +25,7 @@ public class FacitHandler implements ConnectionHandler {
             Observable<String> queryInputs,
             Observable<Boolean> instantSearchChanges,
             Observable<String> enterPresses,
-            Observer<List<URI>> links,
+            Observer<List<String>> links,
             Observer<String> status) {
         Observable<String> textOnGoClick = queryInputs.sample(goClicks);
         final Observable<String> textOnEnterPress = queryInputs.sample(enterPresses);
@@ -39,9 +39,9 @@ public class FacitHandler implements ConnectionHandler {
         textOnAction.subscribe(s -> {
             System.out.println("About to search");
         });
-        final Observable<List<URI>> requests = textOnAction.flatMap(duckDuckGoClient::searchRelated);
+        final Observable<List<String>> requests = textOnAction.flatMap(duckDuckGoClient::searchRelated);
         //Don't want two subscribers on requests since it triggers double requests being issued
-        final ConnectableObservable<List<URI>> doneRequests = requests.publish();
+        final ConnectableObservable<List<String>> doneRequests = requests.publish();
         doneRequests.zipWith(textOnAction, (o, text) -> "search for '" + text + "' done").subscribe(status);
         doneRequests.subscribe(links);
         doneRequests.connect();
