@@ -107,8 +107,9 @@ See the existing impls for inspiration.
    The second status message can be produced in a very similar way by hooking into the appropriate observable just before the result is pushed to the client.
    Add a delay of 300ms to the mock search results to see the effects.
 6. Preparation for a real search. Instead of producing the mock list with a simple map in excercise 4,
-   simulate a potential delay by wrapping the list in an observable. To do this, make a method with the signature
-   `Observable<List<URI>> search(String searchTerm)`. Use `Observable.from` to construct an observable from your mock list and return
+   your are to wrap the list in an observable. This will make the API compatible with the concurrently running search in the next step.
+   To do this, make a method with the signature `Observable<List<URI>> search(String searchTerm)`.
+   Use `Observable.just` to construct an observable from your mock list and return
    it from the method. Now try to hook a call to this new method into the chain where the old `map` call is. On you first try, you most likely end up
    with an observable of observables. How can you get away from this situation?   
 6. Now for the real searching. In your handler there is a `duckDuckGoClient` member. Call its `searchRelated` method instead of your mock search. 

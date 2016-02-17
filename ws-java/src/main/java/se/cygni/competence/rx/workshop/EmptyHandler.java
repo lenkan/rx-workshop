@@ -2,6 +2,7 @@ package se.cygni.competence.rx.workshop;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Func2;
 
 import java.net.URI;
 import java.util.List;
