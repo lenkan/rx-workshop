@@ -104,8 +104,9 @@ See the existing impls for inspiration.
    Push "searching for '<search input>'" just before and "search for '<search input>' done" just after. To push the 
    first message, add a second observer to the search input observable by calling "map" on the search input observable a second time.
    Your map should transform the search input to a status message. Now connect the resulting observable to the status observer.  
-   The second status message can be produced in a very similar way by hooking into the pipeline just before the result is pushed to the client.
-6. Preparation for a real search. Instead of producing the mock list with a simple max in excercise 4, 
+   The second status message can be produced in a very similar way by hooking into the appropriate observable just before the result is pushed to the client.
+   Add a delay of 300ms to the mock search results to see the effects.
+6. Preparation for a real search. Instead of producing the mock list with a simple map in excercise 4,
    simulate a potential delay by wrapping the list in an observable. To do this, make a method with the signature
    `Observable<List<URI>> search(String searchTerm)`. Use `Observable.from` to construct an observable from your mock list and return
    it from the method. Now try to hook a call to this new method into the chain where the old `map` call is. On you first try, you most likely end up
