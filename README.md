@@ -101,7 +101,7 @@ See the existing impls for inspiration.
 4. Instead of pushing just the placeholder URL, emit a URL based on the text in the search field. So if you enter enter the text "test" in the search field, 
     you should respond by updating the result list with a single element with a single URI, for example "www.test.com".
 5. Push status messages before and after the simulated search result are produced. 
-   Push "searching for 'term'" just before and "search for 'term' done" just after. To push the 
+   Push "searching for 'term'" just before and "search done" just after. To push the 
    first message, add a second observer to the search input observable by calling "map" on the search input observable a second time.
    Your map should transform the search input to a status message. Now connect the resulting observable to the status observer.  
    The second status message can be produced in a very similar way by hooking into the appropriate observable just before the result is pushed to the client.
