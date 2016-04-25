@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
+import io.reactivex.netty.RxNetty;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
@@ -23,7 +24,7 @@ public class DuckDuckGoClient {
     private HttpClient<ByteBuf, ByteBuf> client;
 
     public DuckDuckGoClient() {
-        client = HttpClient.newClient("api.duckduckgo.com", 80);
+        client = RxNetty.createHttpClient("api.duckduckgo.com", 80);
     }
 
     /**
@@ -37,9 +38,9 @@ public class DuckDuckGoClient {
     public Observable<List<String>> searchRelated(String searchTerm) {
         final String relativeUrl = String.format("/?q=%s&format=json&pretty=1", Util.urlEncode(searchTerm));
         System.out.println("Running request:" + relativeUrl + " on " + Thread.currentThread().getName());
-        final HttpClientRequest<ByteBuf, ByteBuf> req = client.createGet(relativeUrl);
+        final HttpClientRequest<ByteBuf> req = HttpClientRequest.createGet(relativeUrl);
         System.out.println("Created request");
-        return req
+        return client.submit(req)
                 .flatMap(HttpClientResponse::getContent)
                 .reduce("", (s, byteBuf) -> s+ byteBuf.toString(Charsets.UTF_8))
                 .flatMap(all -> Observable.just(parseLinks(all)));

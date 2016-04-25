@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
+import io.reactivex.netty.RxNetty;
+import io.reactivex.netty.client.RxClient;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
@@ -26,16 +28,16 @@ public class WikipediaSearchClient {
     private HttpClient<ByteBuf, ByteBuf> client;
 
     public WikipediaSearchClient() {
-        client = HttpClient.newClient("en.wikipedia.org", 443)
-                .unsafeSecure();
+        client = RxNetty.<ByteBuf, ByteBuf>newHttpClientBuilder("en.wikipedia.org", 443).config(RxClient.ClientConfig
+                .Builder.newDefaultConfig()).build();
     }
 
     public Observable<List<String>> searchRelated(String searchTerm) {
         final String relativeUrl = String.format("/w/api.php?action=query&generator=search&gsrsearch=%s&format=json&gsrprop=snippet&prop=info&inprop=url", Util.urlEncode(searchTerm));
         System.out.println("Running request:" + relativeUrl + " on " + Thread.currentThread().getName());
-        final HttpClientRequest<ByteBuf, ByteBuf> req = client.createGet(relativeUrl);
+        HttpClientRequest<ByteBuf> req = HttpClientRequest.createGet(relativeUrl);
         System.out.println("Created request");
-        return req
+        return client.submit(req)
                 .flatMap(HttpClientResponse::getContent)
                 .reduce("", (s, byteBuf) -> s+ byteBuf.toString(Charsets.UTF_8))
                 .flatMap(all -> Observable.just(parseLinks(all)))
