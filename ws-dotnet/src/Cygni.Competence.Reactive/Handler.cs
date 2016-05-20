@@ -31,7 +31,32 @@ namespace Cygni.Competence.Reactive
             Subject<string[]> links,
             Subject<string> status)
         {
-           //TODO: Implement!
+            var queryInputsWhileInstantSearchActive =
+                   queryInputs.CombineLatest(instantSearchChanges, (s, instantSearch) => new { InstantSearch = instantSearch, Text = s }) //Combine any input from instant search and input
+                       .Where(a => a.InstantSearch) //Where inputsearch was active
+                       .Throttle(TimeSpan.FromMilliseconds(500)).Select(a => a.Text); //and ignore anything where a new keypress comes withing 500ms
+
+            var doSearch = queryInputs.Sample(goClicks.Merge(enterPresses).Merge(queryInputsWhileInstantSearchActive)); 
+
+            doSearch.Subscribe(
+                async s =>
+                {
+                    if (s != String.Empty)
+                    {
+                        try
+                        {
+                            status.OnNext("Searching for " + s);
+                            var results = await new DuckDuckGoClient().Search(String.Join("", s));
+                            links.OnNext(results);
+                            status.OnNext("Done searching for " + s);
+                        }
+                        catch (Exception ex)
+                        {
+                            status.OnNext("Error searching: " + ex.Message);
+                        }
+                    }
+                }
+            );
         }
     }
 }
